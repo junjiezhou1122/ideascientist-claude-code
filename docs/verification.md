@@ -1,6 +1,6 @@
 # Native plugin verification record
 
-Verification began on 2026-10-09 with Claude Code 2.1.287. The latest local repair checks completed on 2026-10-10. The 26-, 31-, and 51-test counts below describe earlier snapshots. This record distinguishes component checks from scientific assessment.
+Verification began on 2026-10-09 with Claude Code 2.1.287. The version 0.2.2 repair checks completed on 2026-10-10. The 26-, 31-, and 51-test counts below describe earlier snapshots. This record distinguishes component checks from scientific assessment.
 
 ## Verified behavior
 
@@ -57,9 +57,9 @@ The focused native test verified discovery-to-registration handoff. It did not r
 - An irrecoverably missing blind baseline can be marked unavailable without claiming a non-obviousness comparison.
 - Local loading instructions include the plugin root in `--add-dir` because bundled contract files may otherwise lack Read permission from another project.
 
-## Latest local repairs, 2026-10-10
+## Published repairs, version 0.2.2
 
-The local release candidate combines the reader-relay status repair, a reader-only fixed arXiv PDF acquisition helper, a separate 64 KiB acquisition-receipt limit, and citation-checker corrections. Numeric array indices no longer produce false unknown-paper citations, and duplicate diagnostics are removed. These checks describe the local candidate, not a published version.
+Version 0.2.2 was published in [commit c5120c5](https://github.com/junjiezhou1122/ideascientist-claude-code/commit/c5120c54d26ee7fe4abc81448b1d7561915a4e7a). It combines the reader-relay status repair, a reader-only fixed arXiv PDF acquisition helper, a separate 64 KiB acquisition-receipt limit, and citation-checker corrections. Numeric array indices no longer produce false unknown-paper citations, and duplicate diagnostics are removed. The published commit passed [validation on Python 3.10 and 3.13 and Pi transport checks](https://github.com/junjiezhou1122/ideascientist-claude-code/actions/runs/37979416975) and the [plugin source scan](https://github.com/junjiezhou1122/ideascientist-claude-code/actions/runs/37979416847).
 
 The acquisition helper accepts one registered exact-version request and returns transport metadata without the paper body. It rejects redirects, limits the PDF to 40 MiB, and uses a 15-second socket timeout and a 60-second process deadline. Existing partial or mismatched cache pairs remain preserved and blocked. Acquisition alone does not establish that a reader inspected the source.
 
@@ -68,10 +68,16 @@ The acquisition helper accepts one registered exact-version request and returns 
 - A fresh registered Claude Code reader acquired CLIN `2310.10134v1` itself through the scoped helper. Actual Read calls succeeded for pages 1 through 10 and 11 through 20. Only that reader wrote the digest, and it completed before the main session ran the checker. The canonical checker passed. All 33 metadata and boundary assertions passed, including no coordinator PDF read or acquisition call. A second acquisition reused the cache with unchanged bytes and modification times for both the PDF and receipt. This boundary check did not assess semantic result masking.
 - The Learn2Play native continuation ended with status `no_gap` at stage `gaps`, and the canonical checker exited with code 0. The run preserved its original records and spent reservations of 12 role calls, 22 searches, and 5 reader calls. Four additional fresh readers completed with isolated PDF reads and exclusive digest writes. The supplied continuation traces do not establish the earlier P001 reader's full execution chronology.
 - An independent assessment of the masked Learn2Play artifacts supported `no_gap` within the reviewed coverage. No baseline, candidate, review, report, or evaluation was generated. The conclusion means that the reviewed evidence did not establish a methodological gap. It does not establish that the challenge axis is solved or that no gap exists elsewhere.
+- The evidence-withdrawal A001 assessment ended at `gaps` with status `blocked` and checker exit 0. Its two native invocations completed seven role calls, including three fresh readers and six successful PDF Read calls after reader-owned acquisition. The run preserved spent reservations of seven role calls, six searches, and three reader calls. A completed `reader_relay` handoff remained recorded after its continuation.
+- An independent assessment matched all six A001 support receipts to answered full-text digest goals, verbatim answers, and locators. The positively documented neighboring mechanisms did not establish a repeated withdrawal-specific deficiency. Unresolved disconfirmation coverage also prevented a justified `no_gap` conclusion. No baseline, candidate, review, or report was generated. This masked-artifact assessment did not independently verify original-source accuracy or semantic result masking.
+
+A001's live metadata requests encountered HTTP 429 and SSL EOF failures. The continuation reused exact bibliographic identities supplied by the assistant test driver from earlier successful resolver outputs, then obtained fresh scientific digests. These seeds were not personally verified by the human and do not demonstrate automatic fresh metadata resolution. A later request for a new lead succeeded through the same fixed API, so the earlier failures do not establish permanent endpoint unavailability.
+
+The independent A001 execution audit verified observed foreground completion, sequential dispatch, matching reader acquisition receipts, PDF reads, and sampled budget preservation. Its overall status remained `unverified` because filtered unknown tool labels prevented strict inventory verification and one failed Read had an unknown path. That failed path does not establish source-body access. Unused baseline and innovation checks were marked `not_exercised`; no complete isolation or filesystem-sandbox guarantee is claimed.
 
 ## Unverified scope
 
-Earlier reader smoke tests used synthetic local documents. The latest real-literature checks establish an actual PDF acquisition and reader boundary, plus a continuation that correctly stopped at `no_gap`. The full baseline, candidate, review, and report path against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish global novelty or original-paper benchmark performance.
+Earlier reader smoke tests used synthetic local documents. The latest real-literature checks establish actual PDF acquisition and observed reader handoffs, a coverage-bounded `no_gap` continuation, and an independently supported `blocked` assessment. The full baseline, candidate, review, and report path against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish global novelty or original-paper benchmark performance.
 
 Role instructions maintain file boundaries and baseline blindness. Tool lists do not provide a filesystem sandbox. Receipt consistency is not proof of semantic citation support or actual execution chronology. No model weights, corpus, training environment, or original runtime is included.
 
