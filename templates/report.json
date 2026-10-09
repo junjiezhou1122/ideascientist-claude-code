@@ -1,0 +1,119 @@
+{
+  "title": "",
+  "topic_relevance": {
+    "sub_topic": [
+      ""
+    ],
+    "primary_focus": [
+      ""
+    ]
+  },
+  "one_sentence_thesis": "",
+  "core_problem": {
+    "problem_statement": "",
+    "why_it_matters": [
+      ""
+    ],
+    "concrete_example": ""
+  },
+  "key_novelty": {
+    "main_idea": "",
+    "explanation": [
+      "",
+      ""
+    ]
+  },
+  "problem_definition": {
+    "formal_setting": "",
+    "inputs": "",
+    "outputs": ""
+  },
+  "key_terms": {},
+  "related_work": [
+    {
+      "sub_area": "",
+      "what_it_does": "",
+      "open_gap": "",
+      "citations": [
+        ""
+      ]
+    }
+  ],
+  "method": {
+    "high_level_flow": [
+      ""
+    ],
+    "modules": [
+      {
+        "module": "",
+        "role": "",
+        "model": "",
+        "inputs": [
+          ""
+        ],
+        "outputs": [
+          ""
+        ],
+        "notes": ""
+      }
+    ],
+    "novel_architectural_elements": [
+      ""
+    ],
+    "pseudocode": "",
+    "design_choices": [
+      ""
+    ],
+    "theoretical_grounding": ""
+  },
+  "model_details": {
+    "base_model": "",
+    "training": {
+      "method": "",
+      "objective_functions": [
+        ""
+      ],
+      "adaptation": "",
+      "key_hyperparameters": {}
+    }
+  },
+  "comparison_to_sota": {
+    "related_methods": [
+      ""
+    ],
+    "key_differences": [
+      ""
+    ]
+  },
+  "proposed_evaluation": {
+    "evaluation_setting": "",
+    "benchmarks": [
+      {
+        "name": "",
+        "task_type": "",
+        "newly_constructed": false
+      }
+    ],
+    "baselines": [
+      ""
+    ],
+    "main_metrics": [
+      ""
+    ],
+    "ablations": [
+      ""
+    ]
+  },
+  "falsifiable_predictions": [
+    {
+      "pillar": "",
+      "prediction": "",
+      "kill_condition": ""
+    }
+  ],
+  "limitations": [
+    "",
+    "",
+    ""
+  ]
+}

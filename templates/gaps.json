@@ -1,0 +1,17 @@
+{
+  "axis_id": "",
+  "axis": "",
+  "what_has_been_done": "",
+  "gaps": [],
+  "search": {
+    "queries": [
+      ""
+    ],
+    "coverage": "",
+    "status": "searched",
+    "block_reason": null
+  },
+  "supports": [],
+  "outcome": "grounded",
+  "reason": ""
+}

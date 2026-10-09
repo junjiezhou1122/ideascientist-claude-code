@@ -1,0 +1,41 @@
+{
+  "axis_id": "",
+  "gap_id": "",
+  "frozen": true,
+  "proposal_exposed": false,
+  "before_candidate": "",
+  "input_files": [
+    ""
+  ],
+  "input_paper_ids": [
+    ""
+  ],
+  "mechanisms": [
+    {
+      "mechanism": "",
+      "derivation": ""
+    }
+  ],
+  "supports": [
+    {
+      "paper_id": "",
+      "goal": "",
+      "locator": "",
+      "claim": "",
+      "kind": "context",
+      "answer_text": ""
+    }
+  ],
+  "gap_snapshot": {
+    "gap_id": "",
+    "Gap": "",
+    "Near-miss methods and coverage": "",
+    "Methodological deficiency": "",
+    "Why it matters": "",
+    "Evidence route": "",
+    "near_miss_ids": [
+      ""
+    ],
+    "narrow_search_rationale": null
+  }
+}

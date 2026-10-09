@@ -1,0 +1,76 @@
+{
+  "candidate_id": "",
+  "verdict": "survive",
+  "focus": null,
+  "reason": "",
+  "strongest_objection": "",
+  "checks": {
+    "novelty": "",
+    "coherence": "",
+    "feasibility": "",
+    "clarity": "",
+    "mapping": "",
+    "grounding": "",
+    "methodological_contribution": ""
+  },
+  "search": {
+    "queries": [
+      ""
+    ],
+    "coverage": "",
+    "status": "searched",
+    "block_reason": null
+  },
+  "supports": [],
+  "candidate_snapshot": {
+    "candidate_id": "",
+    "axis_id": "",
+    "gap_id": "",
+    "prior_candidate": null,
+    "revision": 0,
+    "Intuition": "",
+    "Gap it attacks": "",
+    "Source inspiration": "",
+    "How it maps to this problem": "",
+    "Why it could work / feasibility": "",
+    "Novelty vs. closest in-domain work": "",
+    "Main risk": "",
+    "novelty_type": "new-topic",
+    "source_ids": [
+      ""
+    ],
+    "closest_in_domain_ids": [
+      ""
+    ],
+    "search": {
+      "queries": [
+        ""
+      ],
+      "coverage": "",
+      "status": "searched",
+      "block_reason": null
+    },
+    "supports": [
+      {
+        "paper_id": "",
+        "goal": "",
+        "locator": "",
+        "claim": "",
+        "kind": "context",
+        "answer_text": ""
+      }
+    ],
+    "gap_snapshot": {
+      "gap_id": "",
+      "Gap": "",
+      "Near-miss methods and coverage": "",
+      "Methodological deficiency": "",
+      "Why it matters": "",
+      "Evidence route": "",
+      "near_miss_ids": [
+        ""
+      ],
+      "narrow_search_rationale": null
+    }
+  }
+}

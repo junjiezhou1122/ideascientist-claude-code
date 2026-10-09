@@ -1,0 +1,16 @@
+{
+  "name": "ideascientist-native",
+  "description": "One native Claude Code plugin for grounded scientific ideation.",
+  "owner": {
+    "name": "junjiezhou1122"
+  },
+  "plugins": [
+    {
+      "name": "ideascientist",
+      "source": ".",
+      "description": "Native Claude Code research methodology translation.",
+      "version": "0.1.0",
+      "license": "CC-BY-NC-4.0"
+    }
+  ]
+}

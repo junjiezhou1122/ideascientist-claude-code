@@ -1,0 +1,54 @@
+{
+  "candidate_id": "",
+  "quality": {
+    "actionability": {
+      "score": 1,
+      "rationale": ""
+    },
+    "specificity": {
+      "score": 1,
+      "rationale": ""
+    },
+    "clarity": {
+      "score": 1,
+      "rationale": ""
+    },
+    "impact": {
+      "score": 1,
+      "rationale": ""
+    },
+    "soundness": {
+      "score": 1,
+      "rationale": ""
+    },
+    "relevance": {
+      "score": 1,
+      "rationale": ""
+    }
+  },
+  "novelty": {
+    "scope": "live",
+    "coverage": "",
+    "judgment": ""
+  },
+  "nonobviousness": {
+    "status": "compared",
+    "baseline_file": null,
+    "rationale": ""
+  },
+  "reference": {
+    "status": "unavailable",
+    "file": null,
+    "match": null,
+    "citation_f1": null
+  },
+  "search": {
+    "queries": [
+      ""
+    ],
+    "coverage": "",
+    "status": "searched",
+    "block_reason": null
+  },
+  "supports": []
+}

@@ -1,0 +1,35 @@
+{
+  "paper_id": "",
+  "identity": {
+    "title": "",
+    "authors": [
+      ""
+    ],
+    "url": "",
+    "doi": null,
+    "version": "",
+    "publication_date": null,
+    "date_basis": ""
+  },
+  "access_level": "full_text",
+  "read_status": "read",
+  "results_masked": true,
+  "views": {
+    "problem_definition": "",
+    "challenge": "",
+    "intuition": "",
+    "solution": ""
+  },
+  "answers": [
+    {
+      "goal": "",
+      "answer": "",
+      "locator": null,
+      "status": "answered",
+      "access_level": "full_text"
+    }
+  ],
+  "limitations": [
+    ""
+  ]
+}

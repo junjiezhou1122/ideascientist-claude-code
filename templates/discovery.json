@@ -1,0 +1,30 @@
+{
+  "task_id": "",
+  "role": "gap-finder",
+  "sources": [
+    {
+      "identity": {
+        "title": "",
+        "authors": [
+          ""
+        ],
+        "url": "",
+        "doi": null,
+        "version": "",
+        "publication_date": null,
+        "date_basis": ""
+      },
+      "goals": [
+        ""
+      ]
+    }
+  ],
+  "search": {
+    "queries": [
+      ""
+    ],
+    "coverage": "",
+    "status": "searched",
+    "block_reason": null
+  }
+}

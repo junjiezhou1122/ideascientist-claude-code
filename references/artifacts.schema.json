@@ -1,0 +1,1955 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ideascientist-artifacts-v1",
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          },
+          "minItems": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "doi": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact version read, such as arXiv v1 or publisher version."
+        },
+        "publication_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "date_basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Bibliographic source proving the date of this exact version, or unknown in live mode."
+        }
+      },
+      "required": [
+        "title",
+        "authors",
+        "url",
+        "doi",
+        "version",
+        "publication_date",
+        "date_basis"
+      ],
+      "additionalProperties": false
+    },
+    "registration": {
+      "type": "object",
+      "properties": {
+        "paper_id": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}$"
+        },
+        "identity": {
+          "$ref": "#/$defs/identity"
+        }
+      },
+      "required": [
+        "paper_id",
+        "identity"
+      ],
+      "additionalProperties": false
+    },
+    "answer": {
+      "type": "object",
+      "properties": {
+        "goal": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Verbatim reading question."
+        },
+        "answer": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Section, equation, page, or Abstract. No search snippet locators."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "answered",
+            "not_found",
+            "unavailable"
+          ]
+        },
+        "access_level": {
+          "type": "string",
+          "enum": [
+            "full_text",
+            "abstract",
+            "unavailable"
+          ]
+        }
+      },
+      "required": [
+        "goal",
+        "answer",
+        "locator",
+        "status",
+        "access_level"
+      ],
+      "additionalProperties": false
+    },
+    "paper": {
+      "type": "object",
+      "properties": {
+        "paper_id": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}$"
+        },
+        "identity": {
+          "$ref": "#/$defs/identity"
+        },
+        "access_level": {
+          "type": "string",
+          "enum": [
+            "full_text",
+            "abstract",
+            "unavailable"
+          ]
+        },
+        "read_status": {
+          "type": "string",
+          "enum": [
+            "read",
+            "unavailable"
+          ]
+        },
+        "results_masked": {
+          "const": true
+        },
+        "views": {
+          "type": "object",
+          "properties": {
+            "problem_definition": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Results-masked design view. Say unavailable when not supported."
+            },
+            "challenge": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Results-masked design view. Say unavailable when not supported."
+            },
+            "intuition": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Results-masked design view. Say unavailable when not supported."
+            },
+            "solution": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Results-masked design view. Say unavailable when not supported."
+            }
+          },
+          "required": [
+            "problem_definition",
+            "challenge",
+            "intuition",
+            "solution"
+          ],
+          "additionalProperties": false
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer"
+          },
+          "minItems": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "paper_id",
+        "identity",
+        "access_level",
+        "read_status",
+        "results_masked",
+        "views",
+        "answers",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "support": {
+      "type": "object",
+      "properties": {
+        "paper_id": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}$"
+        },
+        "goal": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The claim supported at this locator."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "context",
+            "mechanism"
+          ]
+        },
+        "answer_text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Exact answered digest text when this support was created."
+        }
+      },
+      "required": [
+        "paper_id",
+        "goal",
+        "locator",
+        "claim",
+        "kind",
+        "answer_text"
+      ],
+      "additionalProperties": false
+    },
+    "search": {
+      "type": "object",
+      "properties": {
+        "queries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          },
+          "minItems": 1
+        },
+        "coverage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Queries, terminology, examined near misses, exclusions, and coverage limits."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "searched",
+            "blocked"
+          ]
+        },
+        "block_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "queries",
+        "coverage",
+        "status",
+        "block_reason"
+      ],
+      "additionalProperties": false
+    },
+    "gap": {
+      "type": "object",
+      "properties": {
+        "gap_id": {
+          "type": "string",
+          "pattern": "^G[0-9]{3,}$"
+        },
+        "Gap": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Near-miss methods and coverage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Methodological deficiency": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Why it matters": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Evidence route": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "near_miss_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]{3,}$"
+          },
+          "minItems": 1
+        },
+        "narrow_search_rationale": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Required when fewer than two read near misses."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "gap_id",
+        "Gap",
+        "Near-miss methods and coverage",
+        "Methodological deficiency",
+        "Why it matters",
+        "Evidence route",
+        "near_miss_ids",
+        "narrow_search_rationale"
+      ],
+      "additionalProperties": false
+    },
+    "gaps": {
+      "type": "object",
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^A[0-9]{3,}$"
+        },
+        "axis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Copy exactly one assigned axis verbatim."
+        },
+        "what_has_been_done": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/gap"
+          },
+          "minItems": 0,
+          "maxItems": 2
+        },
+        "search": {
+          "$ref": "#/$defs/search"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 0
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "grounded",
+            "no_gap",
+            "blocked"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        }
+      },
+      "required": [
+        "axis_id",
+        "axis",
+        "what_has_been_done",
+        "gaps",
+        "search",
+        "supports",
+        "outcome",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "axis_id": {
+          "type": "string",
+          "pattern": "^A[0-9]{3,}$"
+        },
+        "gap_id": {
+          "type": "string",
+          "pattern": "^G[0-9]{3,}$"
+        },
+        "prior_candidate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^C[0-9]{3,}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "Intuition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Gap it attacks": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Source inspiration": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "How it maps to this problem": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Why it could work / feasibility": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Novelty vs. closest in-domain work": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "Main risk": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "novelty_type": {
+          "type": "string",
+          "enum": [
+            "new-topic",
+            "recombination-of-distant-concepts",
+            "reinforcing-a-weak-connection"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]{3,}$"
+          },
+          "minItems": 1
+        },
+        "closest_in_domain_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]{3,}$"
+          },
+          "minItems": 1
+        },
+        "search": {
+          "$ref": "#/$defs/search"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 1
+        },
+        "gap_snapshot": {
+          "$ref": "#/$defs/gap"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "axis_id",
+        "gap_id",
+        "prior_candidate",
+        "revision",
+        "Intuition",
+        "Gap it attacks",
+        "Source inspiration",
+        "How it maps to this problem",
+        "Why it could work / feasibility",
+        "Novelty vs. closest in-domain work",
+        "Main risk",
+        "novelty_type",
+        "source_ids",
+        "closest_in_domain_ids",
+        "search",
+        "supports",
+        "gap_snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "survive",
+            "revise",
+            "reject",
+            "unverified"
+          ]
+        },
+        "focus": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "novelty",
+                "coherence",
+                "feasibility",
+                "clarity",
+                "mapping",
+                "grounding"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "strongest_objection": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "checks": {
+          "type": "object",
+          "properties": {
+            "novelty": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "coherence": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "feasibility": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "clarity": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "mapping": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "grounding": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "methodological_contribution": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "novelty",
+            "coherence",
+            "feasibility",
+            "clarity",
+            "mapping",
+            "grounding",
+            "methodological_contribution"
+          ],
+          "additionalProperties": false
+        },
+        "search": {
+          "$ref": "#/$defs/search"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 0
+        },
+        "candidate_snapshot": {
+          "$ref": "#/$defs/candidate"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "verdict",
+        "focus",
+        "reason",
+        "strongest_objection",
+        "checks",
+        "search",
+        "supports",
+        "candidate_snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "topic_relevance": {
+          "type": "object",
+          "properties": {
+            "sub_topic": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "primary_focus": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "sub_topic",
+            "primary_focus"
+          ],
+          "additionalProperties": false
+        },
+        "one_sentence_thesis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Under 30 words, plain language, no metric numbers."
+        },
+        "core_problem": {
+          "type": "object",
+          "properties": {
+            "problem_statement": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "why_it_matters": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "concrete_example": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "problem_statement",
+            "why_it_matters",
+            "concrete_example"
+          ],
+          "additionalProperties": false
+        },
+        "key_novelty": {
+          "type": "object",
+          "properties": {
+            "main_idea": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "explanation": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 2,
+              "maxItems": 3
+            }
+          },
+          "required": [
+            "main_idea",
+            "explanation"
+          ],
+          "additionalProperties": false
+        },
+        "problem_definition": {
+          "type": "object",
+          "properties": {
+            "formal_setting": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "inputs": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "outputs": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "formal_setting",
+            "inputs",
+            "outputs"
+          ],
+          "additionalProperties": false
+        },
+        "key_terms": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          }
+        },
+        "related_work": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sub_area": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "what_it_does": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "open_gap": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^P[0-9]{3,}$"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "sub_area",
+              "what_it_does",
+              "open_gap",
+              "citations"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "method": {
+          "type": "object",
+          "properties": {
+            "high_level_flow": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "modules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "module": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "role": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "model": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "inputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Substantive prose in the user language."
+                    },
+                    "minItems": 1
+                  },
+                  "outputs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Substantive prose in the user language."
+                    },
+                    "minItems": 1
+                  },
+                  "notes": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  }
+                },
+                "required": [
+                  "module",
+                  "role",
+                  "model",
+                  "inputs",
+                  "outputs",
+                  "notes"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "novel_architectural_elements": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "pseudocode": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "design_choices": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "theoretical_grounding": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "high_level_flow",
+            "modules",
+            "novel_architectural_elements",
+            "pseudocode",
+            "design_choices",
+            "theoretical_grounding"
+          ],
+          "additionalProperties": false
+        },
+        "model_details": {
+          "type": "object",
+          "properties": {
+            "base_model": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "training": {
+              "type": "object",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                "objective_functions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "minItems": 1
+                },
+                "adaptation": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                "key_hyperparameters": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Substantive prose in the user language."
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "method",
+                "objective_functions",
+                "adaptation",
+                "key_hyperparameters"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "base_model",
+            "training"
+          ],
+          "additionalProperties": false
+        },
+        "comparison_to_sota": {
+          "type": "object",
+          "properties": {
+            "related_methods": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "key_differences": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "related_methods",
+            "key_differences"
+          ],
+          "additionalProperties": false
+        },
+        "proposed_evaluation": {
+          "type": "object",
+          "properties": {
+            "evaluation_setting": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "benchmarks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "task_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "newly_constructed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "task_type",
+                  "newly_constructed"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1
+            },
+            "baselines": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "main_metrics": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            },
+            "ablations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "minItems": 1
+            }
+          },
+          "required": [
+            "evaluation_setting",
+            "benchmarks",
+            "baselines",
+            "main_metrics",
+            "ablations"
+          ],
+          "additionalProperties": false
+        },
+        "falsifiable_predictions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "pillar": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "prediction": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "kill_condition": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              }
+            },
+            "required": [
+              "pillar",
+              "prediction",
+              "kill_condition"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          },
+          "minItems": 3,
+          "maxItems": 5
+        }
+      },
+      "required": [
+        "title",
+        "topic_relevance",
+        "one_sentence_thesis",
+        "core_problem",
+        "key_novelty",
+        "problem_definition",
+        "key_terms",
+        "related_work",
+        "method",
+        "model_details",
+        "comparison_to_sota",
+        "proposed_evaluation",
+        "falsifiable_predictions",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "report_evidence": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 1
+        },
+        "candidate_snapshot": {
+          "$ref": "#/$defs/candidate"
+        },
+        "report_snapshot": {
+          "$ref": "#/$defs/report"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "supports",
+        "candidate_snapshot",
+        "report_snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "baseline": {
+      "type": "object",
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^A[0-9]{3,}$"
+        },
+        "gap_id": {
+          "type": "string",
+          "pattern": "^G[0-9]{3,}$"
+        },
+        "frozen": {
+          "const": true
+        },
+        "proposal_exposed": {
+          "const": false
+        },
+        "before_candidate": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "input_files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Substantive prose in the user language."
+          },
+          "minItems": 1
+        },
+        "input_paper_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]{3,}$"
+          },
+          "minItems": 1
+        },
+        "mechanisms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mechanism": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              },
+              "derivation": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Substantive prose in the user language."
+              }
+            },
+            "required": [
+              "mechanism",
+              "derivation"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 1
+        },
+        "gap_snapshot": {
+          "$ref": "#/$defs/gap"
+        }
+      },
+      "required": [
+        "axis_id",
+        "gap_id",
+        "frozen",
+        "proposal_exposed",
+        "before_candidate",
+        "input_files",
+        "input_paper_ids",
+        "mechanisms",
+        "supports",
+        "gap_snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "quality": {
+          "type": "object",
+          "properties": {
+            "actionability": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            },
+            "specificity": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            },
+            "clarity": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            },
+            "impact": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            },
+            "soundness": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            },
+            "relevance": {
+              "type": "object",
+              "properties": {
+                "score": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                }
+              },
+              "required": [
+                "score",
+                "rationale"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "actionability",
+            "specificity",
+            "clarity",
+            "impact",
+            "soundness",
+            "relevance"
+          ],
+          "additionalProperties": false
+        },
+        "novelty": {
+          "type": "object",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "enum": [
+                "live",
+                "cutoff"
+              ]
+            },
+            "coverage": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            },
+            "judgment": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "scope",
+            "coverage",
+            "judgment"
+          ],
+          "additionalProperties": false
+        },
+        "nonobviousness": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "compared",
+                "unavailable"
+              ]
+            },
+            "baseline_file": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "rationale": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Substantive prose in the user language."
+            }
+          },
+          "required": [
+            "status",
+            "baseline_file",
+            "rationale"
+          ],
+          "additionalProperties": false
+        },
+        "reference": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unavailable",
+                "user_supplied"
+              ]
+            },
+            "file": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "match": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "citation_f1": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "file",
+            "match",
+            "citation_f1"
+          ],
+          "additionalProperties": false
+        },
+        "search": {
+          "$ref": "#/$defs/search"
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/support"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "candidate_id",
+        "quality",
+        "novelty",
+        "nonobviousness",
+        "reference",
+        "search",
+        "supports"
+      ],
+      "additionalProperties": false
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T[0-9]{3,}$"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "gap-finder",
+            "innovator",
+            "reviewer",
+            "report-writer"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "identity": {
+                "$ref": "#/$defs/identity"
+              },
+              "goals": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Substantive prose in the user language."
+                },
+                "minItems": 1,
+                "maxItems": 5
+              }
+            },
+            "required": [
+              "identity",
+              "goals"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "search": {
+          "$ref": "#/$defs/search"
+        }
+      },
+      "required": [
+        "task_id",
+        "role",
+        "sources",
+        "search"
+      ],
+      "additionalProperties": false
+    },
+    "axis": {
+      "type": "object",
+      "properties": {
+        "axis_id": {
+          "type": "string",
+          "pattern": "^A[0-9]{3,}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        }
+      },
+      "required": [
+        "axis_id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "spent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "limit",
+        "spent"
+      ],
+      "additionalProperties": false
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^T[0-9]{3,}$"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "gap-finder",
+            "innovator",
+            "reviewer",
+            "report-writer",
+            "blind-baseline",
+            "paper-reader"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "output": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "done",
+            "needs_registration",
+            "blocked"
+          ]
+        },
+        "search_allowance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "reader_allowance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        }
+      },
+      "required": [
+        "task_id",
+        "role",
+        "target",
+        "output",
+        "status",
+        "search_allowance",
+        "reader_allowance"
+      ],
+      "additionalProperties": false
+    },
+    "run": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "problem": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "challenge": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "cutoff": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "gaps",
+            "candidate",
+            "review",
+            "report",
+            "evaluated"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "blocked",
+            "no_gap",
+            "complete"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Substantive prose in the user language."
+        },
+        "axes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/axis"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "selected": {
+          "type": "object",
+          "properties": {
+            "axis_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^A[0-9]{3,}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "gap_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^G[0-9]{3,}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "candidate_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^C[0-9]{3,}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "axis_id",
+            "gap_id",
+            "candidate_id"
+          ],
+          "additionalProperties": false
+        },
+        "next_ids": {
+          "type": "object",
+          "properties": {
+            "paper": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "gap": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "candidate": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "task": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "paper",
+            "gap",
+            "candidate",
+            "task"
+          ],
+          "additionalProperties": false
+        },
+        "budgets": {
+          "type": "object",
+          "properties": {
+            "role_calls": {
+              "$ref": "#/$defs/budget"
+            },
+            "searches": {
+              "$ref": "#/$defs/budget"
+            },
+            "reader_calls": {
+              "$ref": "#/$defs/budget"
+            }
+          },
+          "required": [
+            "role_calls",
+            "searches",
+            "reader_calls"
+          ],
+          "additionalProperties": false
+        },
+        "max_revisions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "max_candidates_per_gap": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "blind_baseline": {
+          "type": "boolean"
+        },
+        "papers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/registration"
+          },
+          "minItems": 0
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/task"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "slug",
+        "problem",
+        "challenge",
+        "language",
+        "cutoff",
+        "stage",
+        "status",
+        "reason",
+        "axes",
+        "selected",
+        "next_ids",
+        "budgets",
+        "max_revisions",
+        "max_candidates_per_gap",
+        "blind_baseline",
+        "papers",
+        "tasks"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

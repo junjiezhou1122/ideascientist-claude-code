@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "slug": "",
+  "problem": "",
+  "challenge": "",
+  "language": "",
+  "cutoff": null,
+  "stage": "planned",
+  "status": "active",
+  "reason": "",
+  "axes": [
+    {
+      "axis_id": "",
+      "name": ""
+    }
+  ],
+  "selected": {
+    "axis_id": null,
+    "gap_id": null,
+    "candidate_id": null
+  },
+  "next_ids": {
+    "paper": 1,
+    "gap": 1,
+    "candidate": 1,
+    "task": 1
+  },
+  "budgets": {
+    "role_calls": {
+      "limit": 0,
+      "spent": 0
+    },
+    "searches": {
+      "limit": 0,
+      "spent": 0
+    },
+    "reader_calls": {
+      "limit": 0,
+      "spent": 0
+    }
+  },
+  "max_revisions": 0,
+  "max_candidates_per_gap": 1,
+  "blind_baseline": false,
+  "papers": [],
+  "tasks": []
+}

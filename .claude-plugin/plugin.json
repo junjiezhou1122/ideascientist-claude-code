@@ -1,0 +1,14 @@
+{
+  "name": "ideascientist",
+  "version": "0.1.0",
+  "description": "Native Claude Code agents for evidence-grounded scientific ideation.",
+  "author": {
+    "name": "junjiezhou1122, native adaptation maintainer"
+  },
+  "license": "CC-BY-NC-4.0",
+  "keywords": [
+    "research",
+    "ideation",
+    "evidence"
+  ]
+}
