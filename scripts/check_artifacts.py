@@ -68,27 +68,17 @@ def validate_schema(value, schema, definitions, path='$'):
     return errors
 
 
-def strings(value):
-    if isinstance(value, str):
-        yield value
-    elif isinstance(value, dict):
-        for child in value.values():
-            yield from strings(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from strings(child)
-
-
 def cited_ids(value):
     ids, errors = set(), []
-    for string in strings(value):
-        for bracket in re.findall(r'\[([^\]\n]+)\]', string):
-            if bracket.startswith('P') or bracket.isdigit():
+    if isinstance(value, str):
+        for match in re.finditer(r'(?P<identifier>\b[A-Za-z_]\w*)?\[(?P<bracket>[^\]\n]+)\]', value):
+            bracket = match['bracket']
+            if bracket.startswith('P') or (bracket.isdigit() and match['identifier'] is None):
                 if not PAPER_ID.fullmatch(bracket):
                     errors.append(f'invalid citation [{bracket}]; use one stable P ID per bracket')
                 else:
                     ids.add(bracket)
-    if isinstance(value, dict):
+    elif isinstance(value, dict):
         for key, child in value.items():
             if key in ('paper_id', 'citations', 'near_miss_ids', 'source_ids', 'closest_in_domain_ids', 'input_paper_ids'):
                 ids.update([child] if isinstance(child, str) else child)
@@ -368,12 +358,9 @@ def check_run(run_dir):
     for name, collection in (('paper', registry), ('gap', gaps), ('candidate', candidates), ('task', task_ids)):
         if collection and run['next_ids'][name] <= max(int(key[1:]) for key in collection):
             errors.append(f'next_ids.{name}: must exceed all allocated IDs')
+    all_supports = [support for value in artifacts.values() for support in value.get('supports', [])]
     for path in root.rglob('*.md'):
-        ids, issues = cited_ids(path.read_text())
-        errors.extend(f'{path.relative_to(root)}: {issue}' for issue in issues)
-        all_supports = [support for value in artifacts.values() for support in value.get('supports', [])]
-        if ids:
-            evidence(str(path.relative_to(root)), path.read_text(), all_supports)
+        evidence(str(path.relative_to(root)), path.read_text(), all_supports)
     return errors
 
 

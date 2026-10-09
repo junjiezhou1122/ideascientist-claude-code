@@ -36,6 +36,8 @@ Paper reading uses coordinator relay by default. A role returns a registered rea
 
 Metadata discovery uses native web search and the fixed command `python3 <plugin-root>/scripts/resolve_metadata.py <arxiv-ID-or-abs/pdf-URL>` through the native command tool. Python 3.10 or later is required. This scoped helper returns only exact arXiv identity and provenance, discards abstracts and bodies, and bounds requests to twenty seconds and 256 KiB. It rejects redirects and requested-version mismatches. Revised versions use `updated`; v1 uses `published`. Each attempt consumes one search from the existing reservation. Workers use at most two keyword queries before resolving leads. Host denial remains blocked. An empty blocked discovery preserves the failed metadata trace and cannot authorize registration or stage advancement. The reader uses native page opening, locator search or authorized local source reading. Unsupported PDF parsing or inaccessible exact versions remain unavailable. Search snippets cannot support mechanism claims. File ownership and raw-source boundaries are prompt constraints within your existing permissions, not an operating-system sandbox.
 
+The bundled `scripts/acquire_arxiv.py` is a Claude reader capability. Codex does not invoke it, and downloading a PDF does not establish native PDF parsing support.
+
 ## Validate
 
 ```sh

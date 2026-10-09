@@ -64,12 +64,16 @@ Outputs live in `runs/ideascientist/<slug>` under your current research project.
 | `candidates/C001.json` | One intuition for one gap. The innovator writes it. |
 | `reviews/C001.json` | An independent verdict on the exact candidate. The reviewer writes it. |
 | `papers/P001.json` | One version's digest and accumulated goal answers. The paper reader writes it. |
+| `sources/P001.request.json` | Exact registered identity and P ID. The coordinator writes it. |
+| `sources/P001.pdf`, `sources/P001.acquisition.json` | Exact PDF cache and transport receipt. The scoped helper writes them. |
 | `discoveries/T001.json` | One task's metadata registration request. The requesting role writes it. |
 | `baselines/G001.json` | A blind baseline frozen before candidate exposure. The baseline agent writes it. |
 | `report.json`, `report-evidence.json` | The fourteen-field proposal and evidence receipt. The report writer writes them. |
 | `evaluation.json` | Optional independent quality, scoped novelty, and non-obviousness judgments. The reviewer writes it. |
 
 A discovery role uses WebSearch for leads and scoped Bash only for `python3 <plugin-root>/scripts/resolve_metadata.py <arxiv-ID-or-abs/pdf-URL>`. The helper returns exact identity and provenance from fixed arXiv metadata, with no abstract or body output. It bounds requests to twenty seconds and 256 KiB and rejects redirects or mismatched versions. Revised versions use `updated`; v1 uses `published`. Each attempt consumes a reserved search. Use at most two keyword queries before resolving leads. A denied helper stays blocked under native permissions.
+
+For unanswered goals on a registered exact arXiv version without a local source, the coordinator writes the one-paper request in `sources`. The reader's scoped Bash runs only `python3 <plugin-root>/scripts/acquire_arxiv.py <absolute-run>/sources/Pnnn.request.json`, with no flags or other commands. Python 3.10 or later is required. The helper validates registration and cutoff through run.json, derives the fixed HTTPS arxiv.org PDF URL, rejects redirects and non-PDF responses, and streams at most forty MiB. Its socket timeout is fifteen seconds and its total process deadline is sixty seconds; timeout or cancellation terminates and joins the download child. It publishes without replacing existing files. A complete matching cache pair is reused without network or writes; partial or mismatched pairs stay blocked and preserved. Its output contains identity, URLs, path, hash, bytes, PDF magic, acquisition date, and reuse status, with no source body. Only the reader opens the actual PDF with Read and page ranges and writes the masked digest. The helper does not establish evidence access by itself. Each invocation attempts acquisition at most once within the existing reader reservation, and answered goals fetch nothing.
 
 If no admissible identity can be resolved, the role writes an empty blocked discovery with a substantive reason. Its matching task stays blocked; it does not request registration or advance a stage. All main skills declare Bash for the checker and run it after actual foreground role completion. Agent calls explicitly set `run_in_background=false`; forced background calls must finish before checks.
 

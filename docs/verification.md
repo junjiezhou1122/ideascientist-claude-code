@@ -1,6 +1,6 @@
 # Native plugin verification record
 
-The source plugin was verified on 2026-10-09 with Claude Code 2.1.287. This record distinguishes offline structural checks and synthetic native-agent smoke tests from research-quality evaluation.
+Verification began on 2026-10-09 with Claude Code 2.1.287. The latest local repair checks completed on 2026-10-10. The 26-, 31-, and 51-test counts below describe earlier snapshots. This record distinguishes component checks from scientific assessment.
 
 ## Verified behavior
 
@@ -57,9 +57,21 @@ The focused native test verified discovery-to-registration handoff. It did not r
 - An irrecoverably missing blind baseline can be marked unavailable without claiming a non-obviousness comparison.
 - Local loading instructions include the plugin root in `--add-dir` because bundled contract files may otherwise lack Read permission from another project.
 
+## Latest local repairs, 2026-10-10
+
+The local release candidate combines the reader-relay status repair, a reader-only fixed arXiv PDF acquisition helper, a separate 64 KiB acquisition-receipt limit, and citation-checker corrections. Numeric array indices no longer produce false unknown-paper citations, and duplicate diagnostics are removed. These checks describe the local candidate, not a published version.
+
+The acquisition helper accepts one registered exact-version request and returns transport metadata without the paper body. It rejects redirects, limits the PDF to 40 MiB, and uses a 15-second socket timeout and a 60-second process deadline. Existing partial or mismatched cache pairs remain preserved and blocked. Acquisition alone does not establish that a reader inspected the source.
+
+- All 81 offline tests and the structure checker passed.
+- Native Codex loading found four skills. Pi loaded four commands and four tools, and its deterministic native transport tests passed on the combined snapshot. These checks add no scientific runs on either host. The PDF helper is Claude Code only. Codex and Pi PDF parsing was not added.
+- A fresh registered Claude Code reader acquired CLIN `2310.10134v1` itself through the scoped helper. Actual Read calls succeeded for pages 1 through 10 and 11 through 20. Only that reader wrote the digest, and it completed before the main session ran the checker. The canonical checker passed. All 33 metadata and boundary assertions passed, including no coordinator PDF read or acquisition call. A second acquisition reused the cache with unchanged bytes and modification times for both the PDF and receipt. This boundary check did not assess semantic result masking.
+- The Learn2Play native continuation ended with status `no_gap` at stage `gaps`, and the canonical checker exited with code 0. The run preserved its original records and spent reservations of 12 role calls, 22 searches, and 5 reader calls. Four additional fresh readers completed with isolated PDF reads and exclusive digest writes. The supplied continuation traces do not establish the earlier P001 reader's full execution chronology.
+- An independent assessment of the masked Learn2Play artifacts supported `no_gap` within the reviewed coverage. No baseline, candidate, review, report, or evaluation was generated. The conclusion means that the reviewed evidence did not establish a methodological gap. It does not establish that the challenge axis is solved or that no gap exists elsewhere.
+
 ## Unverified scope
 
-The reader smoke tests used synthetic local documents. The later real-literature trial completed an isolated reader digest but stopped during discovery; the repaired discovery test verified an actual arXiv metadata handoff. A complete ideation task against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish research quality, global novelty, or original-paper benchmark performance.
+Earlier reader smoke tests used synthetic local documents. The latest real-literature checks establish an actual PDF acquisition and reader boundary, plus a continuation that correctly stopped at `no_gap`. The full baseline, candidate, review, and report path against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish global novelty or original-paper benchmark performance.
 
 Role instructions maintain file boundaries and baseline blindness. Tool lists do not provide a filesystem sandbox. Receipt consistency is not proof of semantic citation support or actual execution chronology. No model weights, corpus, training environment, or original runtime is included.
 

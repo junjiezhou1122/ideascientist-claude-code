@@ -16,7 +16,7 @@ The output is a research proposal with traceable paper evidence, explicit assump
 
 ## Install the plugin
 
-Use a current Claude Code version with nested subagent support. The native design was tested with Claude Code **2.1.287**. All seven agents use `model: inherit` and your existing Claude Code login and model configuration. You do not need the original Python runtime, Vault database, vector services, custom model endpoints, MCP servers, or training environment. The offline checker and fixed arXiv metadata helper require Python **3.10 or later** and only its standard library.
+Use a current Claude Code version with nested subagent support. The native design was tested with Claude Code **2.1.287**. All seven agents use `model: inherit` and your existing Claude Code login and model configuration. You do not need the original Python runtime, Vault database, vector services, custom model endpoints, MCP servers, or training environment. The offline checker, fixed arXiv metadata helper, and Claude Code reader's PDF acquisition helper require Python **3.10 or later** and only its standard library.
 
 Install from the GitHub marketplace:
 
@@ -116,6 +116,8 @@ Each run lives in `runs/ideascientist/<slug>` beneath your research project.
 | `run.json`, `plan.md`, `problem.md` | State, budgets, selected IDs, decisions, and the research problem. |
 | `gaps/A001.json` | Evidence-grounded gaps for one axis. |
 | `papers/P001.json` | Exact-version identity, goal answers, locators, and four result-masked views. |
+| `sources/P001.request.json` | One registered exact-version acquisition request written by the coordinator. |
+| `sources/P001.pdf`, `sources/P001.acquisition.json` | Exact arXiv PDF cache and transport receipt written by the Claude Code reader's scoped helper. |
 | `discoveries/T001.json` | Exact metadata and reading goals awaiting registration, or an empty blocked trace with its reason. |
 | `candidates/C001.json`, `reviews/C001.json` | One intuition and the independent verdict on that exact candidate. |
 | `baselines/G001.json` | A frozen baseline created before the candidate. |
@@ -136,7 +138,7 @@ Roles exchange structured digests instead of raw paper text. Result masking remo
 
 The offline checker confirms structural consistency. It cannot prove that a citation supports its claim, that a baseline was actually created first, or that an idea is globally novel. Non-obviousness comparison requires a baseline frozen before candidate exposure. Reference matching and citation F1 remain unavailable unless you explicitly supply a reference proposal.
 
-The verification record includes 51 passing offline tests, strict Claude manifest validation, actual Codex and Pi loader checks, deterministic Pi metadata budget, permission and context regressions, and a real native arXiv discovery handoff. A complete run on real literature has not been verified. No original benchmark equivalence is claimed. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
+Checks on 2026-10-10 passed 81 offline tests, the structure checker, native Codex and Pi loading, and deterministic Pi transport tests. An isolated Claude Code reader acquired the exact CLIN PDF, read pages 1 through 20, and wrote its digest before the coordinator checked it. A separate Learn2Play continuation ended at `no_gap` with a passing checker and an independent assessment limited to its reviewed evidence. The full baseline, candidate, review, and report path remains unverified. The PDF acquisition helper is available only to Claude Code readers. This repair adds no PDF parsing for Codex or Pi. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
 
 ## Attribution and license
 

@@ -10,7 +10,7 @@ ROLES = {'orchestrator', 'gap-finder', 'innovator', 'reviewer', 'report-writer',
 COMMANDS = {'ideate', 'resume', 'evaluate', 'check'}
 TOOLS = {
     'orchestrator': {'Read', 'Write', 'Edit', 'Agent'},
-    'paper-reader': {'Read', 'Write', 'Edit', 'WebFetch'},
+    'paper-reader': {'Read', 'Write', 'Edit', 'WebFetch', 'Bash'},
     'blind-baseline': {'Read', 'Write', 'Edit'},
 }
 
@@ -82,6 +82,8 @@ def check_plugin(root=ROOT):
         package = json.loads((root / 'package.json').read_text())
         if not (root / 'scripts/resolve_metadata.py').is_file() or 'scripts/resolve_metadata.py' not in package.get('files', []):
             errors.append('metadata: fixed resolver must exist and ship in the Pi package')
+        if not (root / 'scripts/acquire_arxiv.py').is_file() or 'scripts/acquire_arxiv.py' not in package.get('files', []):
+            errors.append('acquisition: fixed helper must exist and ship with shared resources')
         if package.get('pi') != {'extensions': ['./adapters/pi/index.ts']} or 'pi-package' not in package.get('keywords', []):
             errors.append('Pi: unsupported extension package metadata')
         if package.get('dependencies') or not all(name in package.get('peerDependencies', {}) for name in ('@earendil-works/pi-coding-agent', '@earendil-works/pi-agent-core', '@earendil-works/pi-ai', 'typebox')):

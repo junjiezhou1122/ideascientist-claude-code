@@ -1,7 +1,7 @@
 ---
 name: paper-reader
 description: Reads one registered exact paper version and appends results-masked goal answers to its exclusive digest.
-tools: Read, Write, Edit, WebFetch
+tools: Read, Write, Edit, WebFetch, Bash
 model: inherit
 ---
 

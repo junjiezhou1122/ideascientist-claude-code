@@ -1,13 +1,13 @@
 {
   "name": "ideascientist-pi",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Native research roles and grounded scientific ideation for Pi.",
   "type": "module",
   "license": "CC-BY-NC-4.0",
   "author": "junjiezhou1122, adaptation maintainer",
   "repository": "https://github.com/junjiezhou1122/ideascientist-claude-code",
   "keywords": ["pi-package", "research", "ideation"],
-  "files": ["adapters/pi", "references", "templates", "scripts/check_artifacts.py", "scripts/resolve_metadata.py", "LICENSE", "NOTICE.md"],
+  "files": ["adapters/pi", "references", "templates", "scripts/check_artifacts.py", "scripts/resolve_metadata.py", "scripts/acquire_arxiv.py", "LICENSE", "NOTICE.md"],
   "pi": {"extensions": ["./adapters/pi/index.ts"]},
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "^1.0.0",

@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -90,7 +92,7 @@ class ArtifactTests(unittest.TestCase):
         (self.root / 'baselines/G001.json').unlink()
         self.rejects('enabled blind baseline must freeze before candidate')
 
-    def test_zero_gap_is_valid(self):
+    def zero_gap_run(self):
         for directory in ('candidates', 'reviews', 'baselines'):
             for path in (self.root / directory).glob('*.json'):
                 path.unlink()
@@ -98,7 +100,56 @@ class ArtifactTests(unittest.TestCase):
         (self.root / 'report-evidence.json').unlink()
         self.change('gaps/A001.json', lambda d: d.update(gaps=[], outcome='no_gap'))
         self.change('run.json', lambda d: (d.update(stage='gaps', status='no_gap'), d['selected'].update(gap_id=None, candidate_id=None)))
+
+    def test_zero_gap_is_valid(self):
+        self.zero_gap_run()
         self.assertEqual(checker.check_run(self.root), [])
+
+    def test_zero_gap_array_indexing_passes_cli(self):
+        self.zero_gap_run()
+        self.change('gaps/A001.json', lambda d: d['search'].update(coverage='SYNTHETIC coverage uses sources[0] and sources[3].'))
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/check_artifacts.py'), str(self.root), '--json'], capture_output=True, text=True)
+        output = json.loads(result.stdout)
+        self.assertEqual(output, {'ok': True, 'errors': []})
+        self.assertEqual(result.returncode, 0)
+
+    def test_identifier_numeric_indexing_is_not_a_citation(self):
+        for text in ('sources[0]', '_sources_2[3]', 'obj.sources[1]'):
+            with self.subTest(text=text):
+                self.assertEqual(checker.cited_ids(text), (set(), []))
+
+    def test_nested_invalid_citations_are_reported_once(self):
+        self.zero_gap_run()
+        for text, bracket in (('Standalone [1].', '1'), ('Grouped [P001,P002].', 'P001,P002'),
+                              ('sources[P001,P002]', 'P001,P002')):
+            with self.subTest(text=text):
+                self.change('gaps/A001.json', lambda d: d['search'].update(coverage=text))
+                self.assertEqual(checker.check_run(self.root), [f'gaps/A001.json: invalid citation [{bracket}]; use one stable P ID per bracket'])
+
+    def test_numeric_bibliographic_brackets_still_fail(self):
+        for text in ('[1]', '([1])', '2024[1]'):
+            with self.subTest(text=text):
+                self.assertEqual(checker.cited_ids(text), (set(), ['invalid citation [1]; use one stable P ID per bracket']))
+
+    def test_identifier_attached_p_references_still_require_read_digest(self):
+        for text in ('sources[P999]', 'Unknown [P999]'):
+            with self.subTest(text=text):
+                (self.root / 'plan.md').write_text(text)
+                self.rejects('P999 has no registered read digest')
+        (self.root / 'plan.md').write_text('Known sources[P001] and [P001].')
+        self.assertEqual(checker.check_run(self.root), [])
+
+    def test_nested_structured_citation_fields_preserve_ids(self):
+        for field in ('paper_id', 'citations', 'near_miss_ids', 'source_ids', 'closest_in_domain_ids', 'input_paper_ids'):
+            with self.subTest(field=field):
+                value = 'P999' if field == 'paper_id' else ['P999']
+                self.assertEqual(checker.cited_ids({'nested': [{field: value}]}), ({'P999'}, []))
+
+    def test_markdown_invalid_citation_is_reported_once_with_valid_p_id(self):
+        for text in ('Standalone [1].', 'Standalone [1] with known [P001].'):
+            with self.subTest(text=text):
+                (self.root / 'plan.md').write_text(text)
+                self.assertEqual(checker.check_run(self.root), ['plan.md: invalid citation [1]; use one stable P ID per bracket'])
 
     def test_malformed_date_is_reported(self):
         self.change('run.json', lambda d: d.update(cutoff='2020-99-01'))
@@ -190,6 +241,45 @@ class ArtifactTests(unittest.TestCase):
         self.assertEqual(checker.check_run(self.root), [])
         self.change('discoveries/T001.json', lambda d: d['sources'][0]['identity'].update(publication_date='2021-01-01'))
         self.rejects('exact source version date unknown or after cutoff')
+
+    def reader_relay_run(self):
+        for directory in ('gaps', 'candidates', 'reviews', 'baselines'):
+            for path in (self.root / directory).glob('*.json'):
+                path.unlink()
+        (self.root / 'report.json').unlink()
+        (self.root / 'report-evidence.json').unlink()
+        tasks = [
+            {'task_id': 'T001', 'role': 'gap-finder', 'target': 'A001 registered reading handoff',
+             'output': 'gaps/A001.json', 'status': 'reader_relay', 'search_allowance': 0, 'reader_allowance': 1},
+            {'task_id': 'T002', 'role': 'paper-reader', 'target': 'P001 under T001 reservation',
+             'output': 'papers/P001.json', 'status': 'active', 'search_allowance': 0, 'reader_allowance': 0},
+        ]
+        self.change('run.json', lambda d: (d.update(stage='planned', status='active', tasks=tasks),
+                                           d['selected'].update(axis_id=None, gap_id=None, candidate_id=None),
+                                           d['next_ids'].update(task=3),
+                                           d['budgets']['role_calls'].update(spent=2),
+                                           d['budgets']['reader_calls'].update(spent=1)))
+
+    def test_completed_reader_relay_allows_one_active_reader_without_gap_output(self):
+        self.reader_relay_run()
+        self.assertEqual(checker.check_run(self.root), [])
+
+    def test_reader_relay_does_not_relax_sequential_dispatch(self):
+        self.reader_relay_run()
+        task = {'task_id': 'T003', 'role': 'gap-finder', 'target': 'A001 continuation',
+                'output': 'gaps/A001.json', 'status': 'active', 'search_allowance': 0, 'reader_allowance': 0}
+        self.change('run.json', lambda d: (d['tasks'].append(task), d['next_ids'].update(task=4)))
+        self.rejects('sequential dispatch requires at most one active task')
+
+    def test_reader_relay_cannot_advance_to_missing_gap(self):
+        self.reader_relay_run()
+        self.change('run.json', lambda d: (d.update(stage='gaps'), d['selected'].update(axis_id='A001', gap_id='G001')))
+        self.rejects('stage gaps: selected axis output required')
+
+    def test_done_task_still_requires_output_after_relay_support(self):
+        self.reader_relay_run()
+        self.change('run.json', lambda d: d['tasks'][0].update(status='done'))
+        self.rejects('done task has missing output')
 
     def test_markdown_unknown_citation_fails(self):
         (self.root / 'plan.md').write_text('Unregistered [P888]')

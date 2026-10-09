@@ -39,6 +39,8 @@ Workers use at most two keyword queries before resolving the best leads. Each me
 
 Default `ideascientist_fetch` reads a registered public HTTP or HTTPS URL as HTML or text. It allows at most twenty seconds, four redirects and one megabyte. It rejects unsupported binary content and oversized responses. HTML extraction may omit equations or tables. It does not parse PDF, authenticate to publishers or render JavaScript. Reader access remains unavailable when these limits prevent inspecting the mechanism.
 
+The package ships `scripts/acquire_arxiv.py` with the shared resources for the Claude binding. Pi does not invoke it; this helper does not add PDF parsing to Pi.
+
 To use research tools from another installed Pi extension or MCP server, set their callable names before starting Pi:
 
 ```sh
