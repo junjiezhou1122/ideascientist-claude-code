@@ -1,0 +1,9 @@
+# Claude Code runtime binding
+
+The main session runs each command inline. Resolve resources using the skill's CLAUDE_PLUGIN_ROOT, then pass that absolute root in each task packet. Dispatch the seven registered `ideascientist:<role>` agents through Agent. They use model inherit and the existing Claude Code authentication. Run sequentially and await each completion. Native role wrappers read their canonical references/roles instruction. Do not fork the coordinator history into the reader, blind-baseline, or reviewer.
+
+Metadata search maps to WebSearch. Source fetch maps to WebFetch in paper-reader only. Authorized local sources map to Read, with PDF page ranges when supported. Specialists have Read, Write, Edit, WebSearch, and Agent. Reader has Read, Write, Edit, and WebFetch. Baseline has Read, Write, and Edit. Orchestrator has Read, Write, Edit, and Agent. Main may use Bash for the canonical checker. File ownership remains prompt discipline under native permissions, not a filesystem sandbox.
+
+Roles may call the registered paper-reader as a foreground nested Agent. Claude Code 2.1.287 supports the tested main-to-role-to-reader route. If nesting is unavailable or denied, return a reader_relay packet to the coordinator. Main dispatches the same isolated reader, then invokes a fresh role continuation with only digest paths and a new T task. Do not charge the already reserved reader allowance twice. Stop blocked if no authorized fresh-worker route exists. Preserve host permission decisions and do not bypass denied tools.
+
+Return compact completion and artifact paths. No raw source enters the coordinator. Errors, tool denial, interruption, and missing evidence cannot be called done. A worker completion is provisional until the coordinator applies canonical schema and receipt checks. Keep IDs, budgets, and run state in the coordinator.

@@ -1,0 +1,4 @@
+{
+  "name": "ideascientist-native",
+  "plugins": [{"name": "ideascientist", "source": "."}]
+}

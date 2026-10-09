@@ -8,7 +8,7 @@ Use a current Claude Code version that supports nested subagents. This design wa
 
 The plugin requires no original Python package, Vault database, vector service, custom model endpoint, MCP server, SDK, or training environment. Its offline checker uses Python 3.10 or later and the standard library.
 
-For marketplace installation after the GitHub repository is published, run:
+For marketplace installation, run:
 
 ```text
 /plugin marketplace add junjiezhou1122/ideascientist-claude-code

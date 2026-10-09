@@ -22,7 +22,25 @@ jobs:
         run: |
           python -m json.tool .claude-plugin/plugin.json > /dev/null
           python -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python -m json.tool .codex-plugin/plugin.json > /dev/null
+          python -m json.tool .agents/plugins/marketplace.json > /dev/null
+          python -m json.tool package.json > /dev/null
       - name: Check plugin structure
         run: python scripts/check_plugin.py
       - name: Run offline artifact tests
-        run: python -m unittest discover -s tests -p 'test_native_*.py' -v
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+
+  pi-transport:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install Pi for offline extension checks
+        run: npm install --prefix "$RUNNER_TEMP/pi-host" --no-audit --no-fund @earendil-works/pi-coding-agent@1.0.0
+      - name: Load extension and check native Agent transport
+        run: python scripts/check_runtime_loaders.py --pi-package "$RUNNER_TEMP/pi-host/node_modules/@earendil-works/pi-coding-agent" --transport

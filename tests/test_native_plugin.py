@@ -17,8 +17,9 @@ class PluginTests(unittest.TestCase):
     def test_reader_cannot_gain_search_or_agent_tools(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            for directory in ('.claude-plugin', 'agents', 'skills', 'references', 'templates', 'scripts'):
+            for directory in ('.claude-plugin', '.codex-plugin', '.agents', 'adapters', 'agents', 'skills', 'references', 'templates', 'scripts'):
                 shutil.copytree(ROOT / directory, root / directory)
+            shutil.copyfile(ROOT / 'package.json', root / 'package.json')
             reader = root / 'agents/paper-reader.md'
             reader.write_text(reader.read_text().replace('tools: Read, Write, Edit, WebFetch', 'tools: Read, Write, Edit, WebFetch, Agent'))
             self.assertTrue(any('paper-reader.md: incorrect native tool boundary' in error for error in structure.check_plugin(root)))

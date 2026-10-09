@@ -1,12 +1,16 @@
-# IdeaScientist for Claude Code
+# IdeaScientist for Claude Code, Codex and Pi
 
-```text
-/ideascientist:ideate <research problem>
-```
+Give a research problem to the entry point for your coding agent:
+
+| Runtime | Start a run |
+|---|---|
+| Claude Code | `/ideascientist:ideate <research problem>` |
+| Codex | `$ideascientist:ideascientist-ideate <research problem>` |
+| Pi | `/ideascientist <research problem>` |
 
 Start with a research problem. The plugin automatically searches for methodological gaps, reads supporting papers, transfers a mechanism across research settings, challenges and revises the candidate, and develops a surviving idea into a complete falsifiable proposal. One command coordinates the workflow, subject to available evidence and finite budgets.
 
-This is an independent native Claude Code translation/adaptation of the research methodology in [IdeaScientist: Orchestrating Agents for Grounded Scientific Ideation](https://github.com/jiarui-liu/IdeaScientist). Original work by the IdeaScientist authors. This is not an official upstream distribution.
+This is an independent native translation/adaptation for Claude Code, Codex and Pi of the research methodology in [IdeaScientist: Orchestrating Agents for Grounded Scientific Ideation](https://github.com/jiarui-liu/IdeaScientist). Original work by the IdeaScientist authors. This is not an official upstream distribution.
 
 The output is a research proposal with traceable paper evidence, explicit assumptions, an evaluation plan, and conditions that would falsify its predictions. The plugin does not run experiments, train models, or implement research code.
 
@@ -40,6 +44,27 @@ claude --plugin-dir /absolute/path/to/ideascientist-claude-code --add-dir /absol
 
 `--add-dir` lets the agents read the bundled [workflow](references/workflow.md), [contracts](references/contracts.md), and [artifact schema](references/artifacts.schema.json). Keep research outputs in your working project.
 
+## Install for Codex
+
+Use Codex CLI with native plugin and multi-agent support. This adapter was loaded with **0.160.0**. Install from the same Git repository:
+
+```sh
+codex plugin marketplace add junjiezhou1122/ideascientist-claude-code
+codex plugin add ideascientist@ideascientist-native
+```
+
+Restart Codex, then invoke `$ideascientist:ideascientist-ideate <research problem>`. The four installed skills use fresh generic native workers with shared role instructions. The coordinator relays paper-reader tasks, so no custom agent configuration or nesting-depth change is required. Use the session's actual multi-agent schemas and native web search capability. See the [Codex guide](docs/codex-plugin.md).
+
+## Install for Pi
+
+Use Pi **1.0.0** or later with the current `@earendil-works` extension API:
+
+```sh
+pi install git:github.com/junjiezhou1122/ideascientist-claude-code
+```
+
+Restart Pi, then invoke `/ideascientist <research problem>`. The package registers four commands and fresh native role workers. Workers inherit your active model, thinking level and provider authentication. Default research tools use Crossref metadata and public HTML/text without an extra API key. PDF parsing, publisher login and JavaScript rendering require a compatible host tool. See the [Pi guide](docs/pi-package.md).
+
 ## Start a research run
 
 ```text
@@ -58,15 +83,17 @@ Without a cutoff, the run uses live literature. A cutoff applies to the exact pa
 
 The auxiliary commands support saved runs:
 
-| Command | Purpose |
-|---|---|
-| `/ideascientist:resume runs/ideascientist/<slug>` | Check saved dependencies and continue the next valid stage. |
-| `/ideascientist:check runs/ideascientist/<slug>` | Run the offline artifact and evidence checker. |
-| `/ideascientist:evaluate runs/ideascientist/<slug>` | Request independent quality and coverage-limited novelty evaluation. |
+| Action | Claude Code | Codex | Pi |
+|---|---|---|---|
+| Resume | `/ideascientist:resume` | `$ideascientist:ideascientist-resume` | `/ideascientist-resume` |
+| Check evidence | `/ideascientist:check` | `$ideascientist:ideascientist-check` | `/ideascientist-check` |
+| Evaluate proposal | `/ideascientist:evaluate` | `$ideascientist:ideascientist-evaluate` | `/ideascientist-evaluate` |
+
+Append `runs/ideascientist/<slug>` to any auxiliary command.
 
 ## Native roles
 
-The plugin has four skills and seven agents. Roles call `paper-reader` directly as a foreground nested agent. The main session normally coordinates the run. A standalone `orchestrator` agent follows the same workflow.
+All runtimes share seven scientific role instructions and four entry actions. Claude Code registers seven native agents and four skills. Codex installs four skills that assign the shared roles to fresh generic workers. Pi registers four commands and a bounded native Agent dispatcher. Claude and Pi specialists can call a registered paper-reader directly; Codex uses coordinator relay. The main session normally coordinates the run.
 
 | Agent | Responsibility |
 |---|---|
@@ -109,7 +136,7 @@ Roles exchange structured digests instead of raw paper text. Result masking remo
 
 The offline checker confirms structural consistency. It cannot prove that a citation supports its claim, that a baseline was actually created first, or that an idea is globally novel. Non-obviousness comparison requires a baseline frozen before candidate exposure. Reference matching and citation F1 remain unavailable unless you explicitly supply a reference proposal.
 
-The verification record includes 26 passing offline tests, strict manifest validation, a local synthetic paper-reader smoke test, and a nested main-session to gap-finder to paper-reader smoke test. A complete run on real literature has not been verified. No original benchmark equivalence is claimed. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
+The verification record includes 31 passing offline tests, strict Claude manifest validation, actual Codex and Pi loader checks, deterministic Pi permission and context regressions, and synthetic native reader checks. A complete run on real literature has not been verified. No original benchmark equivalence is claimed. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
 
 ## Attribution and license
 

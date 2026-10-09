@@ -54,6 +54,33 @@ def check_plugin(root=ROOT):
             errors.append(f'{name}: missing shared workflow')
     if 'references/workflow.md' not in (root / 'agents/orchestrator.md').read_text():
         errors.append('orchestrator: missing shared workflow')
+    shared = root / 'references/roles'
+    if shared.exists():
+        if {p.stem for p in shared.glob('*.md')} != ROLES:
+            errors.append('shared roles: canonical inventory mismatch')
+        for role in ROLES:
+            if f'references/roles/{role}.md' not in (root / f'agents/{role}.md').read_text():
+                errors.append(f'{role}: Claude wrapper missing canonical role')
+        codex = json.loads((root / '.codex-plugin/plugin.json').read_text())
+        if set(codex) - {'name', 'version', 'description', 'keywords', 'skills'} or codex.get('skills') != './adapters/codex/skills':
+            errors.append('Codex: unsupported metadata or skills path')
+        inventory = {p.parent.name for p in (root / 'adapters/codex/skills').glob('*/SKILL.md')}
+        if inventory != {f'ideascientist-{name}' for name in COMMANDS}:
+            errors.append('Codex: command inventory mismatch')
+        marketplace = json.loads((root / '.agents/plugins/marketplace.json').read_text())
+        if marketplace['plugins'] != [{'name': 'ideascientist', 'source': '.'}]:
+            errors.append('Codex: expected one root marketplace plugin')
+        package = json.loads((root / 'package.json').read_text())
+        if package.get('pi') != {'extensions': ['./adapters/pi/index.ts']} or 'pi-package' not in package.get('keywords', []):
+            errors.append('Pi: unsupported extension package metadata')
+        if package.get('dependencies') or not all(name in package.get('peerDependencies', {}) for name in ('@earendil-works/pi-coding-agent', '@earendil-works/pi-agent-core', '@earendil-works/pi-ai', 'typebox')):
+            errors.append('Pi: host packages must remain peer dependencies')
+        versions = {plugin['version'], market['plugins'][0]['version'], codex['version'], package['version']}
+        if len(versions) != 1:
+            errors.append('manifests: versions differ')
+        for resource in ('adapters/claude/binding.md', 'adapters/codex/binding.md', 'adapters/pi/binding.md', 'adapters/pi/index.ts'):
+            if not (root / resource).is_file():
+                errors.append(f'adapters: missing resource {resource}')
     return errors
 
 

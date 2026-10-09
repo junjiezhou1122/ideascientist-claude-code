@@ -1,6 +1,6 @@
 # The native IdeaScientist adaptation
 
-IdeaScientist divides scientific ideation into research stages whose inputs, outputs, and evidence can be checked separately. This independent adaptation preserves those stage contracts and runs them through Claude Code sessions and native agents. The repository contains the native plugin and offline checker, without the original runtime code.
+IdeaScientist divides scientific ideation into research stages whose inputs, outputs, and evidence can be checked separately. This independent adaptation preserves those stage contracts and runs them through Claude Code agents, Codex native workers and Pi Agent contexts. The repository contains the native plugin and offline checker, without the original runtime code.
 
 ## Original concepts and native components
 
@@ -23,7 +23,7 @@ Gap finding explains why methods for the same problem come close yet fail at a s
 
 Innovation identifies a transferable mechanism and explains its source, mapping, required conditions, and failure risk. The candidate remains a short conceptual intuition. Formal algorithms and evaluation design belong to the proposal stage. The reviewer searches for combinations of the borrowed mechanism and target problem to test whether prior work already covers the candidate. A revision receives a new ID and a new review. Rejection permits a different intuition within the finite budget.
 
-The standalone orchestrator has no search or fetch tools. Research roles have WebSearch for discovery and Agent for reading delegation. Only the reader has WebFetch. Roles return newly discovered metadata for coordinator registration, then call the reader with stable IDs. This handoff uses native Agent and file tools rather than invented `keyword_search` or `read_paper` APIs.
+The coordinator works from metadata and artifacts. Research roles discover metadata; only isolated readers inspect source bodies. Roles return new sources for coordinator registration before reading under stable P IDs. Claude uses native Agent and web tools. Codex assigns canonical role instructions to fresh generic workers and relays readers through main. Pi uses fresh native Agent contexts and callable host tools, with default Crossref discovery and HTML/text fetching. The shared workflow defines stage behavior, while each runtime binding defines dispatch and available tools.
 
 ## Differences from the original system
 

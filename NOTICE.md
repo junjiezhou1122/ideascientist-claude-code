@@ -1,6 +1,6 @@
 # Attribution notice
 
-This repository is an independent native Claude Code translation/adaptation of the research methodology in **IdeaScientist: Orchestrating Agents for Grounded Scientific Ideation**, by the IdeaScientist authors. It is not an official upstream distribution.
+This repository is an independent native translation/adaptation for Claude Code, Codex and Pi of the research methodology in **IdeaScientist: Orchestrating Agents for Grounded Scientific Ideation**, by the IdeaScientist authors. It is not an official upstream distribution.
 
 Original copyright notice:
 
@@ -25,6 +25,6 @@ The method and field contracts derive from:
 
 Adaptation maintainer and marketplace owner are `junjiezhou1122`.
 
-Changes replace the original execution environment with Claude Code skills and native agent prompts. The adaptation adds role instructions, bounded orchestration, JSON artifact contracts and templates, exact-version paper identities, locator-based evidence receipts, dependency snapshots, a standalone offline checker, synthetic regression fixtures, and English documentation.
+Changes replace the original execution environment with Claude Code skills and agents, Codex plugin skills and native worker delegation, and Pi commands with native Agent contexts. The adaptation adds role instructions, bounded orchestration, JSON artifact contracts and templates, exact-version paper identities, locator-based evidence receipts, dependency snapshots, a standalone offline checker, synthetic regression fixtures, and English documentation.
 
 This repository includes no original Python runtime package, custom clients, model weights, training environment, or research corpus. It does not claim the original system's isolation guarantees, retrieval coverage, training behavior, or benchmark performance. The original authors retain attribution for their work. The maintainer metadata identifies responsibility for this adaptation.
