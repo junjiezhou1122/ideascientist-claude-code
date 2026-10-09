@@ -140,6 +140,18 @@ class ArtifactTests(unittest.TestCase):
         self.change('run.json', lambda d: d.update(blind_baseline=False, reason='Baseline irrecoverably unavailable; no nonobviousness comparison.'))
         self.assertEqual(checker.check_run(self.root), [])
 
+    def test_empty_blocked_discovery_preserves_honest_failure(self):
+        discovery = {'task_id': 'T001', 'role': 'gap-finder', 'sources': [],
+                     'search': {'queries': ['synthetic metadata query'], 'coverage': 'Links lacked exact metadata.',
+                                'status': 'blocked', 'block_reason': 'Exact metadata could not be resolved.'}}
+        task = {'task_id': 'T001', 'role': 'gap-finder', 'target': 'A001', 'output': 'discoveries/T001.json',
+                'status': 'blocked', 'search_allowance': 2, 'reader_allowance': 0}
+        self.change('run.json', lambda d: (d['tasks'].append(task), d['next_ids'].update(task=2)))
+        directory = self.root / 'discoveries'
+        directory.mkdir()
+        (directory / 'T001.json').write_text(json.dumps(discovery))
+        self.assertEqual(checker.check_run(self.root), [])
+
     def test_markdown_unknown_citation_fails(self):
         (self.root / 'plan.md').write_text('Unregistered [P888]')
         self.rejects('P888 has no registered read digest')
