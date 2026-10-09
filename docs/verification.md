@@ -75,9 +75,31 @@ A001's live metadata requests encountered HTTP 429 and SSL EOF failures. The con
 
 The independent A001 execution audit verified observed foreground completion, sequential dispatch, matching reader acquisition receipts, PDF reads, and sampled budget preservation. Its overall status remained `unverified` because filtered unknown tool labels prevented strict inventory verification and one failed Read had an unknown path. That failed path does not establish source-body access. Unused baseline and innovation checks were marked `not_exercised`; no complete isolation or filesystem-sandbox guarantee is claimed.
 
+## Baseline input clarification, version 0.2.3
+
+A real-literature stochastic optimization run exposed a baseline metadata mismatch. The baseline owner copied absolute dispatch paths and canonical control resources into `input_files`. The canonical checker requires only scientific paths relative to the run directory. The completed baseline therefore failed two input checks before innovation.
+
+The clarification separates dispatch read capabilities from artifact provenance. `input_files` contains exactly `problem.md`, the assigned axis gap artifact and the near-miss paper digest paths corresponding to `input_paper_ids`. The dispatch packet retains absolute paths and explicitly allowed control resources.
+
+Before the first innovator invocation and any candidate exposure, a fresh baseline owner may normalize only `input_files`. The coordinator must first retain the complete original artifact and original dispatch provenance in its plan, then verify that every other JSON value remains identical and run the canonical checker before innovation. Missing scientific inputs, unexpected substantive inputs, invalid paper IDs, uncertain originals and actual or suspected exposure block recovery. Baselines remain immutable after innovation or exposure. These chronology and preservation requirements are role and coordinator discipline; structural checks alone do not prove their execution.
+
+All 84 Python regressions, the structure checker and both strict Claude manifests passed. Native loading recognized seven agents and four skills. Two independent reviews found no blocking defect in the scoped clarification. Schema validation structure and checker implementation remained unchanged. The added tests exercise path rejection, exact scientific input sets and frozen/exposure markers; they do not establish execution chronology or scientific preservation.
+
+The original stochastic run edited its completed baseline under the earlier contract, which prohibited that edit. The later clarification does not retroactively make the action compliant. A complete pre-edit artifact snapshot was unavailable to independently compare all scientific values.
+
+## Additional real-literature observations
+
+A fresh admission-reliability run resolved five exact-version papers and completed five full-text readers. Its 22 reading goals and seven support receipts led to a coverage-bounded `no_gap` outcome that an independent masked-artifact assessment supported. The canonical checker passed. No baseline, innovation, review or report ran on that question. Its execution audit remained `unverified` because some tool labels and failed paths were filtered, with no failed audit checks. This does not establish that no gap exists outside the five-paper coverage.
+
+The stochastic optimization run resolved four exact papers and completed their readers. Its gap specialist derived a conditional PCGrad counterexample from documented original-reference projection equations. Independent exact arithmetic confirmed population ascent under the specified independent unbiased finite-support oracle. Existing MoCo, MoDo and CAGrad corrections constrained the gap and candidate claims. Source transcription accuracy, priority and typical training frequency remain unverified.
+
+That invocation completed its baseline and C001 innovation, then dispatched a reviewer for C001. The external one-hour cap interrupted review after two keyword searches and three metadata attempts. No review verdict or report existed. Final canonical checking passed; all 12 role, 14 search and 4 reader reservations remained spent. Native exit 143 and an absent final result prevent a completed-invocation claim. The original run and evidence remain preserved.
+
+C001 predicts common expected descent by applying normalized positive PCGrad-derived pilot weights to an independent payload pair. An independent exact finite enumeration supported this prediction for the tested counterexample. It also found that raw summation already descends in this regime and gives a better expected-loss change on that counterexample for every positive step size. Mathematical correctness therefore does not establish novelty, practical advantage or survival. A preserved native continuation is testing the unfinished review; its outcome is pending.
+
 ## Unverified scope
 
-Earlier reader smoke tests used synthetic local documents. The latest real-literature checks establish actual PDF acquisition and observed reader handoffs, a coverage-bounded `no_gap` continuation, and an independently supported `blocked` assessment. The full baseline, candidate, review, and report path against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish global novelty or original-paper benchmark performance.
+Earlier reader smoke tests used synthetic local documents. Real-literature checks establish actual PDF acquisition and observed reader handoffs, coverage-bounded `no_gap` outcomes, independently supported `blocked` assessments, a derived conditional gap and completed baseline/innovation stages with the historical baseline violation above. The full compliant baseline, independent current review and report path against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish global novelty or original-paper benchmark performance.
 
 Role instructions maintain file boundaries and baseline blindness. Tool lists do not provide a filesystem sandbox. Receipt consistency is not proof of semantic citation support or actual execution chronology. No model weights, corpus, training environment, or original runtime is included.
 

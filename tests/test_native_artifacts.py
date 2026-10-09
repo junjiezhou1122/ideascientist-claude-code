@@ -88,6 +88,44 @@ class ArtifactTests(unittest.TestCase):
         self.change('baselines/G001.json', lambda d: d['input_files'].append('candidates/C001.json'))
         self.rejects('baseline inputs must be proposal-blind')
 
+    def test_baseline_metadata_requires_run_relative_scientific_paths(self):
+        inputs = ['problem.md', 'gaps/A001.json', 'papers/P001.json']
+        invalid_inputs = [[str(self.root / path) for path in inputs],
+                          ['problem.md', 'gaps/A001.json', './papers/P001.json']]
+        for control in ('references/roles/blind-baseline.md', 'adapters/claude/binding.md',
+                        'references/contracts.md', 'references/artifacts.schema.json'):
+            invalid_inputs.append(inputs + [str(ROOT / control)])
+        for path in ('run.json', 'plan.md', 'reviews/C001.json', 'report.json'):
+            invalid_inputs.append(inputs + [path])
+        for paths in invalid_inputs:
+            with self.subTest(paths=paths):
+                self.change('baselines/G001.json', lambda d: d.update(input_files=paths))
+                self.rejects('baseline inputs must be proposal-blind allowlist')
+                self.rejects('blind baseline input metadata must resolve exactly')
+        self.change('baselines/G001.json', lambda d: d.update(input_files=inputs))
+        self.assertEqual(checker.check_run(self.root), [])
+
+    def test_baseline_metadata_requires_exact_scientific_inputs(self):
+        inputs = ['problem.md', 'gaps/A001.json', 'papers/P001.json']
+        for missing in inputs:
+            with self.subTest(missing=missing):
+                self.change('baselines/G001.json', lambda d: d.update(input_files=[path for path in inputs if path != missing]))
+                self.rejects('blind baseline input metadata must resolve exactly')
+        self.change('baselines/G001.json', lambda d: d.update(input_files=inputs + ['papers/P002.json']))
+        self.rejects('blind baseline input metadata must resolve exactly')
+        self.change('baselines/G001.json', lambda d: d.update(input_files=inputs, input_paper_ids=['P001', 'P002']))
+        self.rejects('blind baseline input metadata must resolve exactly')
+        self.rejects('baseline may see only problem and near-miss digests')
+
+    def test_baseline_requires_frozen_unexposed_and_earlier_marker(self):
+        for updates, error in (({'frozen': False}, 'frozen: expected constant True'),
+                               ({'proposal_exposed': True}, 'proposal_exposed: expected constant False'),
+                               ({'before_candidate': 'C002'}, 'baseline freeze marker is after candidate exposure')):
+            with self.subTest(updates=updates):
+                self.change('baselines/G001.json', lambda d: d.update(frozen=True, proposal_exposed=False, before_candidate='C001'))
+                self.change('baselines/G001.json', lambda d: d.update(updates))
+                self.rejects(error)
+
     def test_missing_baseline_cannot_claim_enabled_comparison(self):
         (self.root / 'baselines/G001.json').unlink()
         self.rejects('enabled blind baseline must freeze before candidate')

@@ -1242,15 +1242,17 @@
         },
         "input_files": {
           "type": "array",
+          "description": "Scientific input paths relative to the run directory. The exact set is problem.md, gaps/<axis_id>.json and papers/<paper_id>.json for each input_paper_ids entry. Excludes absolute dispatch paths and role, binding, contracts, schema, run, plan, candidate, review, report and evaluation files.",
           "items": {
             "type": "string",
             "minLength": 1,
-            "description": "Substantive prose in the user language."
+            "description": "Run-relative scientific input path."
           },
           "minItems": 1
         },
         "input_paper_ids": {
           "type": "array",
+          "description": "IDs of the specified near-miss digests used as scientific inputs, corresponding exactly to the papers/<paper_id>.json entries in input_files.",
           "items": {
             "type": "string",
             "pattern": "^P[0-9]{3,}$"
