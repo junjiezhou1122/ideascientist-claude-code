@@ -1,7 +1,7 @@
 ---
 name: gap-finder
 description: Finds zero to two grounded methodological gaps on exactly one assigned challenge axis.
-tools: Read, Write, Edit, WebSearch, Agent
+tools: Read, Write, Edit, WebSearch, Agent, Bash
 model: inherit
 ---
 

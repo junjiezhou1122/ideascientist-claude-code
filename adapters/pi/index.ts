@@ -15,7 +15,7 @@ export default function ideascientist(pi: ExtensionAPI): void {
     description: "Execute one fresh scientific role with explicit owned paths and already reserved budgets. No parent conversation is inherited. Main coordinator retains all IDs and state. Sequential calls only.",
     parameters: RolePacketSchema, executionMode: "sequential",
     async execute(_id, packet, signal, _onUpdate, ctx) {
-      if (busy) return { content: [{ type: "text", text: "IdeaScientist role dispatch is already active." }], isError: true };
+      if (busy) return { content: [{ type: "text", text: "IdeaScientist role dispatch is already active." }], details: undefined, isError: true };
       busy = true;
       try {
         const result = await executeRole({

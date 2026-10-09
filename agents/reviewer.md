@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Actively disconfirms a candidate, or independently evaluates a complete native proposal.
-tools: Read, Write, Edit, WebSearch, Agent
+tools: Read, Write, Edit, WebSearch, Agent, Bash
 model: inherit
 ---
 

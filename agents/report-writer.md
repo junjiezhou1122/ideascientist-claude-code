@@ -1,7 +1,7 @@
 ---
 name: report-writer
 description: Develops the exact current surviving intuition into all fourteen proposal fields.
-tools: Read, Write, Edit, WebSearch, Agent
+tools: Read, Write, Edit, WebSearch, Agent, Bash
 model: inherit
 ---
 

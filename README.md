@@ -16,7 +16,7 @@ The output is a research proposal with traceable paper evidence, explicit assump
 
 ## Install the plugin
 
-Use a current Claude Code version with nested subagent support. The native design was tested with Claude Code **2.1.287**. All seven agents use `model: inherit` and your existing Claude Code login and model configuration. You do not need the original Python runtime, Vault database, vector services, custom model endpoints, MCP servers, or training environment. The offline checker requires Python **3.10 or later** and only its standard library.
+Use a current Claude Code version with nested subagent support. The native design was tested with Claude Code **2.1.287**. All seven agents use `model: inherit` and your existing Claude Code login and model configuration. You do not need the original Python runtime, Vault database, vector services, custom model endpoints, MCP servers, or training environment. The offline checker and fixed arXiv metadata helper require Python **3.10 or later** and only its standard library.
 
 Install from the GitHub marketplace:
 
@@ -63,7 +63,7 @@ Use Pi **1.0.0** or later with the current `@earendil-works` extension API:
 pi install git:github.com/junjiezhou1122/ideascientist-claude-code
 ```
 
-Restart Pi, then invoke `/ideascientist <research problem>`. The package registers four commands and fresh native role workers. Workers inherit your active model, thinking level and provider authentication. Default research tools use Crossref metadata and public HTML/text without an extra API key. PDF parsing, publisher login and JavaScript rendering require a compatible host tool. See the [Pi guide](docs/pi-package.md).
+Restart Pi, then invoke `/ideascientist <research problem>`. The package registers four commands and fresh native role workers. Workers inherit your active model, thinking level and provider authentication. Default research tools use Crossref discovery, exact arXiv metadata resolution, and public HTML/text without an extra API key. PDF parsing, publisher login and JavaScript rendering require a compatible host tool. See the [Pi guide](docs/pi-package.md).
 
 ## Start a research run
 
@@ -116,7 +116,7 @@ Each run lives in `runs/ideascientist/<slug>` beneath your research project.
 | `run.json`, `plan.md`, `problem.md` | State, budgets, selected IDs, decisions, and the research problem. |
 | `gaps/A001.json` | Evidence-grounded gaps for one axis. |
 | `papers/P001.json` | Exact-version identity, goal answers, locators, and four result-masked views. |
-| `discoveries/T001.json` | Bibliographic metadata and reading goals awaiting registration. |
+| `discoveries/T001.json` | Exact metadata and reading goals awaiting registration, or an empty blocked trace with its reason. |
 | `candidates/C001.json`, `reviews/C001.json` | One intuition and the independent verdict on that exact candidate. |
 | `baselines/G001.json` | A frozen baseline created before the candidate. |
 | `report.json`, `report-evidence.json` | The complete proposal and its citation receipts and dependency snapshots. |
@@ -136,7 +136,7 @@ Roles exchange structured digests instead of raw paper text. Result masking remo
 
 The offline checker confirms structural consistency. It cannot prove that a citation supports its claim, that a baseline was actually created first, or that an idea is globally novel. Non-obviousness comparison requires a baseline frozen before candidate exposure. Reference matching and citation F1 remain unavailable unless you explicitly supply a reference proposal.
 
-The verification record includes 31 passing offline tests, strict Claude manifest validation, actual Codex and Pi loader checks, deterministic Pi permission and context regressions, and synthetic native reader checks. A complete run on real literature has not been verified. No original benchmark equivalence is claimed. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
+The verification record includes 51 passing offline tests, strict Claude manifest validation, actual Codex and Pi loader checks, deterministic Pi metadata budget, permission and context regressions, and a real native arXiv discovery handoff. A complete run on real literature has not been verified. No original benchmark equivalence is claimed. See the [verification record](docs/verification.md), [user guide](docs/claude-code-plugin.md), and [method adaptation](docs/method.md).
 
 ## Attribution and license
 

@@ -70,6 +70,7 @@ export async function executeRole(options: {
   let readers = packet.allowances.reader_calls;
   const semantic = capabilities[packet.role];
   const names = semantic.filter((name) => name !== "reader").map((name) => name === "search" ? research.search : name === "fetch" ? research.fetch : name);
+  if (semantic.includes("search") && packet.allowances.searches > 0) names.push("ideascientist_metadata");
   const selected = ctx.tools.filter((tool) => names.includes(tool.name));
   for (const name of names) {
     const required = name !== research.search || packet.allowances.searches > 0;
@@ -93,7 +94,7 @@ export async function executeRole(options: {
           const allowed = await Promise.all(allowlist.map(canonicalPath));
           if (!allowed.includes(path)) throw new Error("File path is outside the packet allowlist.");
         }
-        if (tool.name === research.search) {
+        if (tool.name === research.search || tool.name === "ideascientist_metadata") {
           if (searches <= 0) throw new Error("Reserved search allowance exhausted.");
           searches--;
         }
@@ -108,20 +109,21 @@ export async function executeRole(options: {
         return outcome.result;
       } catch (error) {
         failure = String(error);
-        return { content: [{ type: "text", text: failure }], isError: true };
+        return { content: [{ type: "text", text: failure }], details: undefined, isError: true };
       }
     },
   }));
   if (semantic.includes("reader") && packet.readers.length) {
-    tools.push({
+    const readerParameters = Type.Object({ paper_id: Type.String() }, { additionalProperties: false });
+    const readerTool: AgentTool<typeof readerParameters> = {
       name: "registered_reader", label: "Registered paper reader",
       description: "Read one coordinator-registered paper in a fresh isolated context. Only packet papers and goals are accepted. No ID allocation.",
-      parameters: Type.Object({ paper_id: Type.String() }, { additionalProperties: false }),
+      parameters: readerParameters,
       execute: async (_id, { paper_id }, childSignal) => {
         const registered = packet.readers.find((reader) => reader.paper_id === paper_id);
         if (failure || !registered || readers <= 0) {
           failure = "Reader is unregistered or its reserved allowance is exhausted.";
-          return { content: [{ type: "text", text: failure }], isError: true };
+          return { content: [{ type: "text", text: failure }], details: undefined, isError: true };
         }
         readers--;
         const child: RolePacket = {
@@ -132,9 +134,10 @@ export async function executeRole(options: {
         };
         const result = await executeRole({ ...options, packet: child, signal: childSignal });
         if (result.status !== "done") failure = "Registered reader did not complete. Preserve evidence and stop or relay.";
-        return { content: [{ type: "text", text: JSON.stringify(result) }], isError: result.status === "blocked" };
+        return { content: [{ type: "text", text: JSON.stringify(result) }], details: undefined, isError: result.status === "blocked" };
       },
-    });
+    };
+    tools.push(readerTool);
   }
   let roleBody: string;
   let binding: string;

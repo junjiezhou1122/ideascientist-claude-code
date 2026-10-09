@@ -1588,59 +1588,150 @@
       "additionalProperties": false
     },
     "discovery": {
-      "type": "object",
-      "properties": {
-        "task_id": {
-          "type": "string",
-          "pattern": "^T[0-9]{3,}$"
-        },
-        "role": {
-          "type": "string",
-          "enum": [
-            "gap-finder",
-            "innovator",
-            "reviewer",
-            "report-writer"
-          ]
-        },
-        "sources": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "identity": {
-                "$ref": "#/$defs/identity"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "pattern": "^T[0-9]{3,}$"
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "gap-finder",
+                "innovator",
+                "reviewer",
+                "report-writer"
+              ]
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "identity": {
+                    "$ref": "#/$defs/identity"
+                  },
+                  "goals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Substantive prose in the user language."
+                    },
+                    "minItems": 1,
+                    "maxItems": 5
+                  }
+                },
+                "required": [
+                  "identity",
+                  "goals"
+                ],
+                "additionalProperties": false
               },
-              "goals": {
-                "type": "array",
-                "items": {
+              "minItems": 1
+            },
+            "search": {
+              "$ref": "#/$defs/search"
+            }
+          },
+          "required": [
+            "task_id",
+            "role",
+            "sources",
+            "search"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "pattern": "^T[0-9]{3,}$"
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "gap-finder",
+                "innovator",
+                "reviewer",
+                "report-writer"
+              ]
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "identity": {
+                    "$ref": "#/$defs/identity"
+                  },
+                  "goals": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Substantive prose in the user language."
+                    },
+                    "minItems": 1,
+                    "maxItems": 5
+                  }
+                },
+                "required": [
+                  "identity",
+                  "goals"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 0,
+              "maxItems": 0
+            },
+            "search": {
+              "type": "object",
+              "properties": {
+                "queries": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Substantive prose in the user language."
+                  },
+                  "minItems": 1
+                },
+                "coverage": {
                   "type": "string",
                   "minLength": 1,
-                  "description": "Substantive prose in the user language."
+                  "description": "Queries, terminology, examined near misses, exclusions, and coverage limits."
                 },
-                "minItems": 1,
-                "maxItems": 5
-              }
-            },
-            "required": [
-              "identity",
-              "goals"
-            ],
-            "additionalProperties": false
+                "status": {
+                  "type": "string",
+                  "const": "blocked"
+                },
+                "block_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "queries",
+                "coverage",
+                "status",
+                "block_reason"
+              ],
+              "additionalProperties": false
+            }
           },
-          "minItems": 1
-        },
-        "search": {
-          "$ref": "#/$defs/search"
+          "required": [
+            "task_id",
+            "role",
+            "sources",
+            "search"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "task_id",
-        "role",
-        "sources",
-        "search"
-      ],
-      "additionalProperties": false
+      ]
     },
     "axis": {
       "type": "object",

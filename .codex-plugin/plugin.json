@@ -1,6 +1,6 @@
 {
   "name": "ideascientist",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Grounded scientific ideation with fresh native research roles.",
   "keywords": ["research", "ideation", "evidence"],
   "skills": "./adapters/codex/skills"

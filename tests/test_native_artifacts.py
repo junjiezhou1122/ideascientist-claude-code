@@ -140,17 +140,56 @@ class ArtifactTests(unittest.TestCase):
         self.change('run.json', lambda d: d.update(blind_baseline=False, reason='Baseline irrecoverably unavailable; no nonobviousness comparison.'))
         self.assertEqual(checker.check_run(self.root), [])
 
-    def test_empty_blocked_discovery_preserves_honest_failure(self):
-        discovery = {'task_id': 'T001', 'role': 'gap-finder', 'sources': [],
-                     'search': {'queries': ['synthetic metadata query'], 'coverage': 'Links lacked exact metadata.',
-                                'status': 'blocked', 'block_reason': 'Exact metadata could not be resolved.'}}
+    def discovery(self, sources=None):
+        identity = json.loads((self.root / 'papers/P001.json').read_text())['identity']
+        value = {'task_id': 'T001', 'role': 'gap-finder', 'sources': [] if sources is None else sources,
+                 'search': {'queries': ['synthetic metadata query'], 'coverage': 'Search returned links without exact metadata.',
+                            'status': 'blocked', 'block_reason': 'Exact author and version metadata could not be resolved.'}}
         task = {'task_id': 'T001', 'role': 'gap-finder', 'target': 'A001', 'output': 'discoveries/T001.json',
                 'status': 'blocked', 'search_allowance': 2, 'reader_allowance': 0}
         self.change('run.json', lambda d: (d['tasks'].append(task), d['next_ids'].update(task=2)))
         directory = self.root / 'discoveries'
-        directory.mkdir()
-        (directory / 'T001.json').write_text(json.dumps(discovery))
+        directory.mkdir(exist_ok=True)
+        (directory / 'T001.json').write_text(json.dumps(value))
+        return identity
+
+    def test_empty_blocked_discovery_preserves_honest_failure(self):
+        self.discovery()
         self.assertEqual(checker.check_run(self.root), [])
+
+    def test_empty_discovery_requires_blocked_search_and_substantive_reason(self):
+        self.discovery()
+        for updates in ({'status': 'searched'}, {'block_reason': None}, {'block_reason': '  '}):
+            with self.subTest(updates=updates):
+                self.change('discoveries/T001.json', lambda d: d['search'].update(status='blocked', block_reason='Metadata unavailable.'))
+                self.change('discoveries/T001.json', lambda d: d['search'].update(updates))
+                self.rejects('no allowed type matches')
+
+    def test_empty_discovery_requires_matching_blocked_task(self):
+        self.discovery()
+        for updates in ({'status': 'needs_registration'}, {'role': 'reviewer'}, {'output': 'gaps/A001.json'}):
+            with self.subTest(updates=updates):
+                self.change('run.json', lambda d: d['tasks'][0].update(status='blocked', role='gap-finder', output='discoveries/T001.json'))
+                self.change('run.json', lambda d: d['tasks'][0].update(updates))
+                self.rejects('empty blocked discovery requires matching blocked task, role, and output')
+        self.change('run.json', lambda d: d.update(tasks=[]))
+        self.rejects('empty blocked discovery requires matching blocked task, role, and output')
+
+    def test_empty_discovery_rejects_unknown_fields_and_invalid_role(self):
+        self.discovery()
+        self.change('discoveries/T001.json', lambda d: d.update(extra='Cannot bypass strict schema.'))
+        self.rejects('no allowed type matches')
+        self.change('discoveries/T001.json', lambda d: (d.pop('extra'), d.update(role='paper-reader')))
+        self.rejects('no allowed type matches')
+
+    def test_legacy_nonempty_discovery_still_passes_and_checks_cutoff(self):
+        identity = self.discovery()
+        self.change('discoveries/T001.json', lambda d: d.update(sources=[{'identity': identity, 'goals': ['What is the mechanism?']}]))
+        self.change('discoveries/T001.json', lambda d: d['search'].update(status='searched', block_reason=None))
+        self.change('run.json', lambda d: d['tasks'][0].update(status='needs_registration'))
+        self.assertEqual(checker.check_run(self.root), [])
+        self.change('discoveries/T001.json', lambda d: d['sources'][0]['identity'].update(publication_date='2021-01-01'))
+        self.rejects('exact source version date unknown or after cutoff')
 
     def test_markdown_unknown_citation_fails(self):
         (self.root / 'plan.md').write_text('Unregistered [P888]')

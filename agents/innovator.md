@@ -1,7 +1,7 @@
 ---
 name: innovator
 description: Produces one sourced intuition for one grounded gap, or a new ID for a reviewed revision.
-tools: Read, Write, Edit, WebSearch, Agent
+tools: Read, Write, Edit, WebSearch, Agent, Bash
 model: inherit
 ---
 

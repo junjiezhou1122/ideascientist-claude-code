@@ -6,7 +6,7 @@ Start a research run with `/ideascientist:ideate <research problem>`. The main s
 
 Use a current Claude Code version that supports nested subagents. This design was tested with version 2.1.287 and uses at most three agent layers below the main session. All agents use `model: inherit`, your existing login, and the session's model configuration.
 
-The plugin requires no original Python package, Vault database, vector service, custom model endpoint, MCP server, SDK, or training environment. Its offline checker uses Python 3.10 or later and the standard library.
+The plugin requires no original Python package, Vault database, vector service, custom model endpoint, MCP server, SDK, or training environment. Its offline checker and fixed arXiv metadata helper use Python 3.10 or later and the standard library.
 
 For marketplace installation, run:
 
@@ -68,6 +68,10 @@ Outputs live in `runs/ideascientist/<slug>` under your current research project.
 | `baselines/G001.json` | A blind baseline frozen before candidate exposure. The baseline agent writes it. |
 | `report.json`, `report-evidence.json` | The fourteen-field proposal and evidence receipt. The report writer writes them. |
 | `evaluation.json` | Optional independent quality, scoped novelty, and non-obviousness judgments. The reviewer writes it. |
+
+A discovery role uses WebSearch for leads and scoped Bash only for `python3 <plugin-root>/scripts/resolve_metadata.py <arxiv-ID-or-abs/pdf-URL>`. The helper returns exact identity and provenance from fixed arXiv metadata, with no abstract or body output. It bounds requests to twenty seconds and 256 KiB and rejects redirects or mismatched versions. Revised versions use `updated`; v1 uses `published`. Each attempt consumes a reserved search. Use at most two keyword queries before resolving leads. A denied helper stays blocked under native permissions.
+
+If no admissible identity can be resolved, the role writes an empty blocked discovery with a substantive reason. Its matching task stays blocked; it does not request registration or advance a stage. All main skills declare Bash for the checker and run it after actual foreground role completion. Agent calls explicitly set `run_in_background=false`; forced background calls must finish before checks.
 
 A role first discovers papers and returns metadata. The coordinator assigns stable P IDs and invokes the role again. The role calls the paper reader directly in the foreground and reads its structured digest. Roles and readers run sequentially to avoid concurrent edits. If nested Agent calls are denied, the main session can relay the same reader packet and return only the digest.
 

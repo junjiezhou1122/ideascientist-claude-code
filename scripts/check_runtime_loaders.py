@@ -29,7 +29,7 @@ def check_codex():
         expected = sorted(f'ideascientist-{name}' for name in ('ideate', 'resume', 'check', 'evaluate'))
         if skills != expected or not inventory['installed'][0]['enabled']:
             raise RuntimeError('Codex installed component inventory differs')
-        for resource in ('references/roles/paper-reader.md', 'references/artifacts.schema.json', 'scripts/check_artifacts.py'):
+        for resource in ('references/roles/paper-reader.md', 'references/artifacts.schema.json', 'scripts/check_artifacts.py', 'scripts/resolve_metadata.py'):
             if not (path / resource).is_file():
                 raise RuntimeError(f'Codex cache is missing {resource}')
         return {'runtime': 'Codex', 'version': run(['codex', '--version']).strip(), 'skills': skills, 'status': 'loaded'}
@@ -43,6 +43,16 @@ const {loadExtensions} = await import(process.argv[1]);
 const result = await loadExtensions([process.argv[2]], process.argv[3]);
 if (result.errors.length) throw new Error(JSON.stringify(result.errors));
 const extension = result.extensions[0];
+if (process.argv[4] !== "transport") {
+  const metadata = extension.tools.get("ideascientist_metadata").definition;
+  const blocked = await metadata.execute("invalid", {source:"https://example.invalid/paper"});
+  const value = JSON.parse(blocked.content[0].text);
+  if (value.status !== "blocked" || !value.reason || value.identity || blocked.isError) throw new Error("Metadata domain block contract differs");
+  const controller = new AbortController(); controller.abort();
+  let cancelled = false;
+  try { await metadata.execute("cancelled", {source:"2310.10134"}, controller.signal); } catch { cancelled = true; }
+  if (!cancelled) throw new Error("Cancelled metadata helper did not stop");
+}
 if (process.argv[4] === "transport") await extension.commands.get("test-ideascientist-transport").handler("", {modelRegistry:{}, ui:{notify:()=>{}}});
 console.log(JSON.stringify({runtime:"Pi", tools:[...extension.tools.keys()], commands:[...extension.commands.keys()], status:process.argv[4] === "transport" ? "transport passed" : "loaded"}));
 '''

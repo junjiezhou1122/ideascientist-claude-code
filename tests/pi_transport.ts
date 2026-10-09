@@ -3,7 +3,7 @@ import { mkdtemp, writeFile, readFile, mkdir, symlink, rm } from "node:fs/promis
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Type } from "typebox";
-import { createAssistantMessageEventStream, getModel, type Context } from "@earendil-works/pi-ai";
+import { createAssistantMessageEventStream, getModel, type Context, type JsonObject } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionToolContext } from "@earendil-works/pi-coding-agent";
 import { executeRole, validatePacketPaths } from "../adapters/pi/worker.js";
 import { parsePacket, type RolePacket } from "../adapters/pi/packet.js";
@@ -67,12 +67,12 @@ export default function transportTests(pi: ExtensionAPI): void {
         },
         async executeTool(name, args) {
           calls.push(name);
-          if (deny) return { toolCall: { type: "toolCall", id: "host", name, arguments: {} }, result: { content: [textContent("Denied by host")] }, isError: true };
+          if (deny) return { toolCall: { type: "toolCall", id: "host", name, arguments: {} }, result: { content: [textContent("Denied by host")], details: undefined }, isError: true };
           const parsed: unknown = args;
           assert(parsed && typeof parsed === "object" && "path" in parsed && typeof parsed.path === "string");
           const content = name === "read" ? await readFile(parsed.path, "utf8") : "written";
           if (name === "write") { assert("content" in parsed && typeof parsed.content === "string"); await writeFile(parsed.path, parsed.content); }
-          return { toolCall: { type: "toolCall", id: "host", name, arguments: {} }, result: { content: [textContent(content)] }, isError: false };
+          return { toolCall: { type: "toolCall", id: "host", name, arguments: {} }, result: { content: [textContent(content)], details: undefined }, isError: false };
         },
       };
       const invoke = () => executeRole({ packet, root, ctx, research: { search: "absent_search", fetch: "absent_fetch" } });
@@ -83,6 +83,7 @@ export default function transportTests(pi: ExtensionAPI): void {
         assert.equal(result.status, "done", JSON.stringify(result));
         assert.deepEqual(calls, ["read", "write"]);
         assert(!JSON.stringify(requests[0]).includes("RAW_BODY_SENTINEL"));
+        assert(!JSON.stringify(requests[0]).includes('"name":"ideascientist_metadata"'));
         assert(!JSON.stringify(result).includes("RAW_BODY_SENTINEL"));
         const firstMessage = (requests[0] as Context).messages.find((message) => message.role === "user");
         assert(firstMessage?.role === "user");
@@ -153,6 +154,71 @@ export default function transportTests(pi: ExtensionAPI): void {
         parentTurn = 0; readerTurn = 0;
         assert.equal((await nested()).status, "blocked");
         assert.equal(readerTurn, 0);
+        const discoveryOutput = join(run, "discoveries/T001.json");
+        await mkdir(join(run, "discoveries"));
+        const discovery: RolePacket = { ...specialist, output_files: [discoveryOutput], readers: [], allowances: { searches: 2, reader_calls: 0 } };
+        const researchNames = ["ideascientist_search", "ideascientist_metadata"];
+        const researchTools = researchNames.map((name) => ({ ...hostTools[0], name, label: name, parameters: Type.Object({ source: Type.Optional(Type.String()), query: Type.Optional(Type.String()) }) }));
+        const research = { search: "ideascientist_search", fetch: "absent_fetch" };
+        async function discoveryProbe(sequence: string[], allowance: number, denied = false, cancellation?: AbortController, probePacket = discovery) {
+          let turn = 0;
+          const hostCalls: string[] = [];
+          const exposed: string[][] = [];
+          const probeCtx = {
+            ...ctx, tools: [...hostTools, ...researchTools],
+            modelRegistry: {
+              ...ctx.modelRegistry,
+              streamSimple(selectedModel, context, options) {
+                assert.equal(selectedModel, model);
+                exposed.push(context.messages.flatMap((message) => message.role === "system" ? message.toolsAdded?.map((tool) => tool.name) ?? [] : []));
+                const name = sequence[turn++];
+                const args: JsonObject = name === "ideascientist_metadata" ? { source: "2310.10134v1" } : { query: "synthetic search" };
+                const content = name ? [{ type: "toolCall" as const, id: `metadata-${turn}`, name, arguments: args }]
+                  : [textContent(JSON.stringify({ status: "blocked", reason: "Synthetic discovery probe completed." }))];
+                const message = { role: "assistant" as const, content, api: model.api, provider: model.provider, model: model.id,
+                  usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+                  stopReason: name ? "toolUse" as const : "stop" as const, timestamp: Date.now() };
+                const stream = createAssistantMessageEventStream();
+                queueMicrotask(() => { stream.push({ type: "done", reason: message.stopReason, message }); stream.end(message); });
+                return stream;
+              },
+            },
+            async executeTool(name, _args, options) {
+              hostCalls.push(name);
+              assert(options?.signal);
+              cancellation?.abort();
+              return { toolCall: { type: "toolCall" as const, id: "host", name, arguments: {} },
+                result: { content: [textContent(denied ? "Denied by host" : JSON.stringify({ status: "resolved", identity: { title: "Synthetic metadata", authors: ["Fixture Author"], version: "v1" } }))], details: undefined }, isError: denied };
+            },
+          } satisfies ExtensionToolContext;
+          const result = await executeRole({ packet: { ...probePacket, allowances: { searches: allowance, reader_calls: 0 } }, root, ctx: probeCtx, research, signal: cancellation?.signal });
+          return { result, hostCalls, exposed };
+        }
+        const budgetProbe = await discoveryProbe(["ideascientist_search", "ideascientist_metadata", "ideascientist_metadata"], 2);
+        assert.deepEqual(budgetProbe.hostCalls, ["ideascientist_search", "ideascientist_metadata"]);
+        assert.equal(budgetProbe.result.status, "blocked");
+        assert(budgetProbe.result.status === "blocked" && budgetProbe.result.reason.includes("allowance exhausted"));
+        assert(budgetProbe.exposed[0].includes("ideascientist_metadata"));
+        assert(!budgetProbe.exposed[0].includes("ideascientist_fetch"));
+        assert(!JSON.stringify(budgetProbe.result).includes("Fixture Author"));
+        const deniedProbe = await discoveryProbe(["ideascientist_metadata", "ideascientist_search"], 2, true);
+        assert.deepEqual(deniedProbe.hostCalls, ["ideascientist_metadata"]);
+        assert(deniedProbe.result.status === "blocked" && deniedProbe.result.reason.includes("denied"));
+        const cancelledProbe = await discoveryProbe(["ideascientist_metadata", "ideascientist_search"], 2, false, new AbortController());
+        assert.equal(cancelledProbe.result.status, "blocked");
+        assert.deepEqual(cancelledProbe.hostCalls, ["ideascientist_metadata"]);
+        const noBudget = await discoveryProbe([], 0);
+        assert(!noBudget.exposed[0].includes("ideascientist_metadata"));
+        await mkdir(join(run, "baselines"));
+        const baseline: RolePacket = { ...discovery, role: "blind-baseline", output_files: [join(run, "baselines/G001.json")] };
+        const baselineProbe = await discoveryProbe([], 2, false, undefined, baseline);
+        assert(!baselineProbe.exposed[0].includes("ideascientist_metadata"));
+        assert(!baselineProbe.exposed[0].includes("ideascientist_search"));
+        const coordinator: RolePacket = { ...discovery, role: "orchestrator", output_files: [join(run, "run.json")] };
+        await writeFile(join(root, "references/roles/orchestrator.md"), "Coordinator without research tools.");
+        const coordinatorProbe = await discoveryProbe([], 2, false, undefined, coordinator);
+        assert(!coordinatorProbe.exposed[0].includes("ideascientist_metadata"));
+        assert(!coordinatorProbe.exposed[0].includes("ideascientist_search"));
         commandCtx.ui.notify("Pi native Agent transport checks passed.", "info");
       } finally { await rm(temporary, { recursive: true, force: true }); }
     },

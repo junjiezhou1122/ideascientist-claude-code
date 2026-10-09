@@ -293,6 +293,10 @@ def check_run(run_dir):
         if discovery:
             if path.stem != discovery['task_id']:
                 errors.append(f'{path.name}: discovery task ID mismatch')
+            if not discovery['sources']:
+                matching = [task for task in run['tasks'] if task['task_id'] == discovery['task_id']]
+                if len(matching) != 1 or matching[0]['status'] != 'blocked' or matching[0]['role'] != discovery['role'] or matching[0]['output'] != str(path.relative_to(root)):
+                    errors.append(f'{path.name}: empty blocked discovery requires matching blocked task, role, and output')
             for source in discovery['sources']:
                 date_check(source['identity'], path.name)
     selected = run['selected']

@@ -36,11 +36,15 @@ def check_plugin(root=ROOT):
         if not fields.get('name') or not fields.get('description'):
             errors.append(f'{file.name}: missing name/description')
         if file.parent.name == 'agents':
-            expected = TOOLS.get(file.stem, {'Read', 'Write', 'Edit', 'WebSearch', 'Agent'})
+            expected = TOOLS.get(file.stem, {'Read', 'Write', 'Edit', 'WebSearch', 'Agent', 'Bash'})
             if set(fields.get('tools', '').split(', ')) != expected or fields.get('model') != 'inherit':
                 errors.append(f'{file.name}: incorrect native tool boundary or model inheritance')
-        elif fields.get('context') == 'fork' or fields.get('disable-model-invocation') != 'true':
-            errors.append(f'{file}: commands must run inline and be explicit user invocations')
+        else:
+            if fields.get('context') == 'fork' or fields.get('disable-model-invocation') != 'true':
+                errors.append(f'{file}: commands must run inline and be explicit user invocations')
+            expected = {'Read', 'Bash'} if file.parent.name == 'check' else {'Read', 'Write', 'Edit', 'Agent', 'Bash'}
+            if set(fields.get('allowed-tools', '').split(', ')) != expected:
+                errors.append(f'{file}: commands require declared canonical checker capability')
     for file in list((root / 'agents').glob('*.md')) + list((root / 'skills').glob('*/SKILL.md')) + list((root / 'references').glob('*.md')):
         text = file.read_text()
         for target in re.findall(r'ideascientist:([a-z][a-z-]+)', text):
@@ -68,9 +72,16 @@ def check_plugin(root=ROOT):
         if inventory != {f'ideascientist-{name}' for name in COMMANDS}:
             errors.append('Codex: command inventory mismatch')
         marketplace = json.loads((root / '.agents/plugins/marketplace.json').read_text())
-        if marketplace['plugins'] != [{'name': 'ideascientist', 'source': '.'}]:
+        if marketplace['plugins'] != [{
+            'name': 'ideascientist',
+            'source': {'source': 'local', 'path': './'},
+            'policy': {'installation': 'AVAILABLE', 'authentication': 'ON_INSTALL'},
+            'category': 'Research',
+        }]:
             errors.append('Codex: expected one root marketplace plugin')
         package = json.loads((root / 'package.json').read_text())
+        if not (root / 'scripts/resolve_metadata.py').is_file() or 'scripts/resolve_metadata.py' not in package.get('files', []):
+            errors.append('metadata: fixed resolver must exist and ship in the Pi package')
         if package.get('pi') != {'extensions': ['./adapters/pi/index.ts']} or 'pi-package' not in package.get('keywords', []):
             errors.append('Pi: unsupported extension package metadata')
         if package.get('dependencies') or not all(name in package.get('peerDependencies', {}) for name in ('@earendil-works/pi-coding-agent', '@earendil-works/pi-agent-core', '@earendil-works/pi-ai', 'typebox')):

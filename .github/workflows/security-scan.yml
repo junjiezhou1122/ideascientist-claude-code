@@ -1,0 +1,38 @@
+name: Scan plugin source
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Scan repository with plugin-scanner 3.0.123
+        uses: hashgraph-online/ai-plugin-scanner-action@caba2e96aa8ad2feb6cf6fca52442b52e22e779f
+        with:
+          mode: scan
+          plugin_dir: .
+          format: json
+          output: ${{ runner.temp }}/plugin-source-findings.json
+          profile: default
+          trust_repository_policy: 'false'
+          online: 'false'
+          upload_sarif: 'false'
+          write_step_summary: 'false'
+          min_score: '80'
+          fail_on_severity: high
+          cisco_skill_scan: auto
+          cisco_policy: balanced
+          install_source: pypi
+          install_cisco: 'false'
+          submission_enabled: 'false'
+          pr_comment: 'off'

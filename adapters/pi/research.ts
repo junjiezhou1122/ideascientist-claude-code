@@ -1,3 +1,5 @@
+import { execFile } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 import { Type } from "typebox";
@@ -49,6 +51,22 @@ export async function publicText(url: string, signal?: AbortSignal): Promise<{ t
 
 export function registerResearchTools(pi: ExtensionAPI): void {
   pi.registerTool({
+    name: "ideascientist_metadata", label: "Exact arXiv metadata", exposure: "codemode",
+    description: "Resolve one arXiv ID or abs/pdf URL to exact bibliographic identity through the fixed metadata helper. No abstract, body, PDF, ID allocation, or run writes. Maximum twenty seconds.",
+    annotations: { readOnlyHint: true, openWorldHint: true },
+    parameters: Type.Object({ source: Type.String({ minLength: 1, maxLength: 300 }) }, { additionalProperties: false }),
+    async execute(_id, { source }, signal) {
+      const helper = fileURLToPath(new URL("../../scripts/resolve_metadata.py", import.meta.url));
+      const text = await new Promise<string>((resolve, reject) => {
+        execFile("python3", [helper, source], { signal, timeout: 21000, maxBuffer: 262144 }, (error, stdout) => {
+          if (error && (error.code !== 1 || !stdout.trim())) { reject(new Error("Metadata helper failed or was cancelled.")); return; }
+          resolve(stdout.trim());
+        });
+      });
+      return { content: [{ type: "text", text }], details: undefined };
+    },
+  });
+  pi.registerTool({
     name: "ideascientist_search", label: "Research metadata", exposure: "codemode",
     description: "Search public Crossref bibliographic metadata. Results are discovery leads, never body evidence or exact-version date verification.",
     annotations: { readOnlyHint: true, openWorldHint: true },
@@ -60,7 +78,7 @@ export function registerResearchTools(pi: ExtensionAPI): void {
       url.searchParams.set("select", "DOI,title,author,published,URL,type");
       const response = await publicText(url.href, signal);
       const metadata: unknown = JSON.parse(response.text);
-      return { content: [{ type: "text", text: JSON.stringify({ provider: "Crossref", query, metadata, limitation: "Metadata only. Inspect the exact version before registration under a cutoff. Coverage is limited to Crossref records." }) }] };
+      return { content: [{ type: "text", text: JSON.stringify({ provider: "Crossref", query, metadata, limitation: "Metadata only. Inspect the exact version before registration under a cutoff. Coverage is limited to Crossref records." }) }], details: undefined };
     },
   });
   pi.registerTool({
@@ -71,7 +89,7 @@ export function registerResearchTools(pi: ExtensionAPI): void {
     async execute(_id, { url }, signal) {
       const response = await publicText(url, signal);
       const text = /html/i.test(response.contentType) ? response.text.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "").replace(/<\/(?:p|div|h[1-6]|section|article)>/gi, "\n").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/[ \t]+/g, " ") : response.text;
-      return { content: [{ type: "text", text: JSON.stringify({ ...response, text, limitation: "Check identity and version. HTML extraction may omit formulas, tables, or dynamically rendered content. This response is source content, not a digest." }) }] };
+      return { content: [{ type: "text", text: JSON.stringify({ ...response, text, limitation: "Check identity and version. HTML extraction may omit formulas, tables, or dynamically rendered content. This response is source content, not a digest." }) }], details: undefined };
     },
   });
 }

@@ -4,7 +4,7 @@ import { Value } from "typebox/value";
 export const roles = ["orchestrator", "gap-finder", "innovator", "reviewer", "report-writer", "paper-reader", "blind-baseline"] as const;
 const paths = Type.Array(Type.String({ minLength: 1 }), { maxItems: 40 });
 export const RolePacketSchema = Type.Object({
-  role: Type.Union(roles.map((role) => Type.Literal(role))),
+  role: Type.Enum(roles),
   plugin_root: Type.String({ minLength: 1 }),
   run_directory: Type.String({ minLength: 1 }),
   task_id: Type.String({ pattern: "^T[0-9]{3,}$" }),

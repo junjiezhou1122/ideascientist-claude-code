@@ -30,6 +30,24 @@ The initial Codex CLI-only delegation probe was inconclusive because its JSON ou
 
 These tests establish packaging and local synthetic reader behavior. They do not establish scientific quality, semantic citation support, complete baseline blindness, or a full real-literature run. Codex and Claude generic tool access remains governed by native permissions and prompt discipline; Pi's explicit path/tool guards are not an operating-system sandbox.
 
+## Discovery and catalog repair, version 0.2.1
+
+The real-literature trial on 2026-10-09 exposed a discovery failure. Its search provider returned URL leads without authors or exact versions, and the specialist lacked a metadata-resolution capability. It honestly stopped with an empty discovery, which the previous schema rejected. Earlier attempts also exposed foreground scheduling and checker tool-declaration problems.
+
+The repair adds a fixed arXiv Atom metadata helper, a strict empty-blocked discovery variant, explicit foreground waiting, and Bash declarations for the canonical checker. Metadata calls share the existing search reservation. The helper returns no abstract or paper body, rejects returned identity/version mismatches, and uses the selected revision date. Its CLI has a portable twenty-second deadline and a 256 KiB response limit. Expected metadata failure returns blocked JSON; host denial or cancellation still blocks the Pi worker.
+
+Verification completed on 2026-10-10:
+
+- All 51 Python regressions passed. They cover both discovery variants, blocked task linkage, exact version/date selection, malformed metadata, rejected redirects, abstract exclusion, CLI timeout, packaging, and tool declarations.
+- Both strict Claude manifests passed without warnings. Codex 0.160.0 installed the corrected native marketplace and loaded four skills. Pi 1.0.0 loaded four commands and four tools, including metadata resolution. Its native transport tests passed shared-budget, tool-exposure, permission, cancellation, and reader-boundary checks. The shipped Pi extension passed strict TypeScript checking. The deterministic test driver runs successfully through Pi's loader, but its separate strict type check has existing incompatibilities with Pi's exported test APIs.
+- A real Claude CLI session loaded 0.2.1 and invoked one foreground gap-finder with an incomplete CLIN URL. The child executed the helper, preserved the returned eight authors, exact `2310.10134v1` identity and 2023-10-16 date, and wrote four reader goals. It returned `needs_registration`. Coordinator checks ran after child completion, and the independent checker returned `ok: true` with no errors. Streaming provenance passed twenty assertions, including no coordinator metadata resolution, no body reads, and no permission denials. The focused run spent one role call, one metadata search, and zero reader calls.
+- The original blocked run passed the repaired checker without editing any of its eight files. This validates the honest blocked record; it does not advance that scientific run.
+- The same pinned `plugin-scanner` 3.0.123 used by the catalog scored the combined source 85/100, compared with 71/100 before repair. It reported zero critical, zero high, two medium, four low, and five informational findings. Remaining medium findings repeat the missing lockfile for a peer-only runtime package. The scan skipped unavailable Cisco deep scanning and online probing. It does not prove semantic instruction safety or research quality.
+
+The catalog repair pins GitHub Actions to immutable SHAs and supplies explicit native Codex marketplace source and policy fields. The source scan workflow uses the catalog's pinned action with read-only permissions and no comments, submissions, online probes, or SARIF upload. A passing local scan is separate from the catalog's own approval and centralized scan.
+
+The focused native test verified discovery-to-registration handoff. It did not run subsequent readers, create a gap or candidate, or finish a research proposal. Windows execution of the portable CLI has not been tested on a Windows host.
+
 ## Corrections included in the tested design
 
 - Discovery-only calls reserve no reader budget. Registered reading continuations reserve no repeated-search budget.
@@ -41,7 +59,7 @@ These tests establish packaging and local synthetic reader behavior. They do not
 
 ## Unverified scope
 
-The native-agent smoke tests used synthetic local documents. They did not complete an ideation task against real literature or verify live paper fetching. Offline tests and native calls establish component behavior and handoffs. They do not establish research quality, global novelty, or original-paper benchmark performance.
+The reader smoke tests used synthetic local documents. The later real-literature trial completed an isolated reader digest but stopped during discovery; the repaired discovery test verified an actual arXiv metadata handoff. A complete ideation task against real literature remains unverified. Offline tests and native calls establish component behavior and handoffs. They do not establish research quality, global novelty, or original-paper benchmark performance.
 
 Role instructions maintain file boundaries and baseline blindness. Tool lists do not provide a filesystem sandbox. Receipt consistency is not proof of semantic citation support or actual execution chronology. No model weights, corpus, training environment, or original runtime is included.
 

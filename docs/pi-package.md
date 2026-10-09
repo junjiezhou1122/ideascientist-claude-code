@@ -33,6 +33,10 @@ Add `cutoff YYYY-MM-DD`, `slug <name>` or an output language to the first reques
 
 Default `ideascientist_search` retrieves bibliographic metadata from Crossref without an API key. Its coverage is limited to Crossref records. Metadata is a discovery lead, not proof a paper was read or that the accessed version predates a historical cutoff.
 
+`ideascientist_metadata` resolves an arXiv ID or abs/pdf URL through the bundled standard-library Python helper. Python 3.10 or later is required for metadata resolution and artifact checking. The helper contacts only the fixed arXiv Atom metadata endpoint and emits exact title, authors, canonical version URL, version, date, and provenance. It discards abstracts and bodies. An unversioned lead selects the returned exact version; a requested version mismatch blocks. Revised versions use the returned `updated` date, while v1 uses `published`. The request is limited to twenty seconds and 256 KiB, with redirects rejected.
+
+Workers use at most two keyword queries before resolving the best leads. Each metadata attempt consumes a search from the same reservation, including failures and denials. The metadata tool appears only in discovery-capable workers with a positive search allowance. Calls pass through host permission hooks and cancellation. If metadata cannot be resolved, preserve an empty blocked discovery and its matching blocked task. It cannot authorize registration or evidence claims.
+
 Default `ideascientist_fetch` reads a registered public HTTP or HTTPS URL as HTML or text. It allows at most twenty seconds, four redirects and one megabyte. It rejects unsupported binary content and oversized responses. HTML extraction may omit equations or tables. It does not parse PDF, authenticate to publishers or render JavaScript. Reader access remains unavailable when these limits prevent inspecting the mechanism.
 
 To use research tools from another installed Pi extension or MCP server, set their callable names before starting Pi:

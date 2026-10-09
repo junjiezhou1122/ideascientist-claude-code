@@ -1,4 +1,11 @@
 {
   "name": "ideascientist-native",
-  "plugins": [{"name": "ideascientist", "source": "."}]
+  "plugins": [
+    {
+      "name": "ideascientist",
+      "source": {"source": "local", "path": "./"},
+      "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+      "category": "Research"
+    }
+  ]
 }
