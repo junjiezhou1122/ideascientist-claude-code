@@ -207,6 +207,80 @@ class ArtifactTests(unittest.TestCase):
         self.rejects('gap changed since candidate creation')
         self.rejects('gap changed since baseline freeze')
 
+    def refresh_snapshots(self):
+        gap = json.loads((self.root / 'gaps/A001.json').read_text())['gaps'][0]
+        for name in ('candidates/C001.json', 'baselines/G001.json'):
+            self.change(name, lambda d: d.update(gap_snapshot=gap))
+        candidate = json.loads((self.root / 'candidates/C001.json').read_text())
+        report = json.loads((self.root / 'report.json').read_text())
+        self.change('reviews/C001.json', lambda d: d.update(candidate_snapshot=candidate))
+        self.change('report-evidence.json', lambda d: d.update(candidate_snapshot=candidate, report_snapshot=report))
+
+    def test_verbatim_answer_local_citations_pass_cli(self):
+        answer = 'SYNTHETIC source attributes the mechanism to [66] and implementation to [59].'
+        self.change('papers/P001.json', lambda d: d['answers'][0].update(answer=answer))
+        for name in ('gaps/A001.json', 'candidates/C001.json', 'reviews/C001.json', 'baselines/G001.json', 'report-evidence.json'):
+            self.change(name, lambda d: d['supports'][0].update(answer_text=answer))
+        self.refresh_snapshots()
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/check_artifacts.py'), str(self.root), '--json'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(json.loads(result.stdout), {'ok': True, 'errors': []})
+
+    def test_copied_answer_cannot_bypass_receipt_equality(self):
+        self.change('reviews/C001.json', lambda d: d['supports'][0].update(answer_text='Forged source text [66].'))
+        self.rejects('answer changed since receipt')
+
+    def test_candidate_only_citations_do_not_need_review_supports(self):
+        self.change('reviews/C001.json', lambda d: d.update(supports=[]))
+        self.assertEqual(checker.check_run(self.root), [])
+        self.change('reviews/C001.json', lambda d: d.update(reason='Direct review assertion [P001].'))
+        self.rejects('reviews/C001.json: cited P001 lacks explicit support locator')
+
+    def test_snapshot_only_registered_source_retains_candidate_ownership(self):
+        paper = json.loads((self.root / 'papers/P001.json').read_text())
+        paper['paper_id'] = 'P002'
+        paper['identity'].update(title='SYNTHETIC second mechanism note', url='https://example.invalid/second-note-v1')
+        (self.root / 'papers/P002.json').write_text(json.dumps(paper))
+        self.change('run.json', lambda d: (d['papers'].append({'paper_id': 'P002', 'identity': paper['identity']}), d['next_ids'].update(paper=3)))
+        support = json.loads((self.root / 'candidates/C001.json').read_text())['supports'][0]
+        self.change('candidates/C001.json', lambda d: (d.update(Intuition='Candidate-only mechanism [P002].'), d['supports'].append(dict(support, paper_id='P002'))))
+        self.refresh_snapshots()
+        self.assertEqual(checker.check_run(self.root), [])
+        self.change('candidates/C001.json', lambda d: d.update(supports=[support]))
+        self.refresh_snapshots()
+        self.rejects('candidates/C001.json: cited P002 lacks explicit support locator')
+
+    def test_snapshot_cannot_hide_unsupported_original_candidate(self):
+        self.change('candidates/C001.json', lambda d: d.update(Intuition='Unsupported candidate assertion [P999].'))
+        self.refresh_snapshots()
+        self.rejects('candidates/C001.json: cited P999 lacks explicit support locator')
+
+    def test_snapshot_cannot_hide_malformed_original_candidate(self):
+        self.change('candidates/C001.json', lambda d: d.update(Intuition='Authored invalid citation [1].'))
+        self.refresh_snapshots()
+        failures = checker.check_run(self.root)
+        self.assertIn('candidates/C001.json: invalid citation [1]; use one stable P ID per bracket', failures)
+        self.assertFalse(any('reviews/C001.json: invalid citation' in error for error in failures), failures)
+
+    def test_authored_support_fields_still_validate_citations(self):
+        for field in ('claim', 'goal', 'locator'):
+            for text, phrase in (('Authored [1].', 'invalid citation [1]'),
+                                 ('Authored [P001,P002].', 'invalid citation [P001,P002]'),
+                                 ('Authored [P999].', 'cited P999 has no registered read digest')):
+                with self.subTest(field=field, text=text):
+                    support = json.loads((self.root / 'candidates/C001.json').read_text())['supports'][0]
+                    self.change('reviews/C001.json', lambda d: d.update(supports=[dict(support, **{field: text})]))
+                    self.rejects('reviews/C001.json: ' + phrase)
+
+    def test_same_named_report_terms_remain_authored_prose(self):
+        for field in ('answer_text', 'candidate_snapshot', 'gap_snapshot', 'report_snapshot', 'supports'):
+            for text, phrase in (('Authored [1].', 'invalid citation [1]'),
+                                 ('Authored [P999].', 'cited P999 has no registered read digest')):
+                with self.subTest(field=field, text=text):
+                    self.change('report.json', lambda d: d.update(key_terms={field: text}))
+                    self.refresh_snapshots()
+                    self.rejects('report.json: ' + phrase)
+
     def test_changed_answer_with_same_locator_invalidates_support(self):
         self.change('papers/P001.json', lambda d: d['answers'][0].update(answer='The mechanism needs a different assumption.'))
         self.rejects('answer changed since receipt')

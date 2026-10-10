@@ -9,7 +9,7 @@
       "name": "ideascientist",
       "source": ".",
       "description": "Native Claude Code research methodology translation.",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "license": "CC-BY-NC-4.0"
     }
   ]

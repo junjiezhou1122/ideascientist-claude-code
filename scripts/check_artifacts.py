@@ -170,7 +170,11 @@ def check_run(run_dir):
                 if answer['access_level'] == 'abstract' and answer['locator'] != 'Abstract':
                     errors.append(f'{pid}: abstract answer must locate Abstract')
 
-    def evidence(label, value, supports):
+    def evidence(label, value, supports, snapshot_fields=()):
+        if isinstance(value, dict):
+            value = {key: child for key, child in value.items() if key not in snapshot_fields}
+            if 'supports' in value:
+                value['supports'] = [{key: child for key, child in support.items() if key != 'answer_text'} for support in supports]
         ids, issues = cited_ids(value)
         errors.extend(f'{label}: {issue}' for issue in issues)
         supported = set()
@@ -208,7 +212,8 @@ def check_run(run_dir):
             if path.stem != value[key] or value[key] in collection:
                 errors.append(f'{path}: file ID mismatch or duplicate artifact')
             collection[value[key]] = value
-            evidence(str(path.relative_to(root)), value, value['supports'])
+            snapshot_fields = {'candidate': ('gap_snapshot',), 'review': ('candidate_snapshot',), 'baseline': ('gap_snapshot',)}.get(kind, ())
+            evidence(str(path.relative_to(root)), value, value['supports'], snapshot_fields)
     for aid, axis in axes.items():
         if axis_names.get(aid) != axis['axis']:
             errors.append(f'{aid}: must reproduce exactly one assigned axis')
@@ -319,7 +324,7 @@ def check_run(run_dir):
             if receipt['report_snapshot'] != report:
                 errors.append('report-evidence.json: report changed since evidence receipt')
             evidence('report.json', report, receipt['supports'])
-            evidence('report-evidence.json', receipt, receipt['supports'])
+            evidence('report-evidence.json', receipt, receipt['supports'], ('candidate_snapshot', 'report_snapshot'))
     evaluation = load('evaluation.json', 'evaluation', stage >= 5)
     if evaluation:
         if report is None or evaluation['candidate_id'] != cid:
